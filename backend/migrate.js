@@ -1,52 +1,50 @@
-// Load environment variables from .env file
 require("dotenv").config();
 
-const fs = require("node:fs");
-const path = require("node:path");
+const fs = require("fs");
+const path = require("path");
+const { Client } = require("pg");
 
-// Build the path to the schema SQL file
-const schema = path.join(__dirname, "database", "schema.sql");
-
-// Get database connection details from .env file
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
-// Update the database schema
-const mysql = require("mysql2/promise");
-
 const migrate = async () => {
-  try {
-    // Read the SQL statements from the schema file
-    const sql = fs.readFileSync(schema, "utf8");
+  const initialClient = new Client({
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: "postgres",
+  });
 
-    // Create a specific connection to the database
-    const database = await mysql.createConnection({
+  try {
+    await initialClient.connect();
+
+    // Supprimer et créer la base de données
+    await initialClient.query(`DROP DATABASE IF EXISTS ${DB_NAME}`);
+    await initialClient.query(`CREATE DATABASE ${DB_NAME}`);
+    await initialClient.end();
+
+    // Connexion à la nouvelle base de données
+    const client = new Client({
       host: DB_HOST,
       port: DB_PORT,
       user: DB_USER,
       password: DB_PASSWORD,
-      multipleStatements: true, // Allow multiple SQL statements
+      database: DB_NAME,
     });
 
-    // Drop the existing database if it exists
-    await database.query(`drop database if exists ${DB_NAME}`);
+    await client.connect();
 
-    // Create a new database with the specified name
-    await database.query(`create database ${DB_NAME}`);
+    // Lire et exécuter le schéma SQL
+    const schema = path.join(__dirname, "database", "schema.sql");
+    const sql = fs.readFileSync(schema, "utf8");
+    await client.query(sql);
 
-    // Switch to the newly created database
-    await database.query(`use ${DB_NAME}`);
-
-    // Execute the SQL statements to update the database schema
-    await database.query(sql);
-
-    // Close the database connection
-    database.end();
-
-    console.info(`${DB_NAME} updated from ${schema} 🆙`);
+    console.info(`Base de données ${DB_NAME} mise à jour 🆙`);
+    await client.end();
   } catch (err) {
-    console.error("Error updating the database:", err.message);
+    console.error("Erreur de migration:", err.message);
+    process.exit(1);
   }
 };
 
-// Run the migration function
 migrate();
