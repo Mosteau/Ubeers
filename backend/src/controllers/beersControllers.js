@@ -26,36 +26,43 @@ const read = async (req, res, next) => {
 
 // Ajouter une nouvelle bière
 const add = async (req, res, next) => {
-  // Validation des données requises
-  const {
-    label,
-    brewery,
-    type,
-    alcohol_percent: alcoholPercent,
-    price,
-    stock_quantity: stockQuantity,
-    // description,
-  } = req.body;
-
-  if (
-    !label ||
-    !brewery ||
-    !type ||
-    !alcoholPercent ||
-    !price ||
-    !stockQuantity
-  ) {
-    res
-      .status(400)
-      .json({ message: "Tous les champs obligatoires doivent être remplis" });
-    return;
-  }
-
   try {
-    const insertId = await tables.beers.create(req.body);
-    res.status(201).json({ insertId });
+    const {
+      label,
+      brewery,
+      type,
+      alcoholPercent,
+      price,
+      stockQuantity,
+      description,
+    } = req.body;
+
+    if (
+      !label ||
+      !brewery ||
+      !type ||
+      !alcoholPercent ||
+      !price ||
+      !stockQuantity
+    ) {
+      return res.status(400).json({
+        message: "Tous les champs sont obligatoires",
+      });
+    }
+
+    const insertId = await tables.beers.create({
+      label,
+      brewery,
+      type,
+      alcoholPercent,
+      price,
+      stockQuantity,
+      description,
+    });
+
+    return res.status(201).json({ insertId });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
@@ -77,12 +84,14 @@ const edit = async (req, res, next) => {
 const destroy = async (req, res, next) => {
   try {
     const deleted = await tables.beers.delete(req.params.id);
+
     if (deleted) {
       res.sendStatus(204);
     } else {
       res.sendStatus(404);
     }
   } catch (err) {
+    console.error("Erreur lors de la suppression:", err);
     next(err);
   }
 };

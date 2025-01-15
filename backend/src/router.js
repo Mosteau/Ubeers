@@ -10,10 +10,12 @@ const router = express.Router();
 const beersControllers = require("./controllers/beersControllers");
 
 // route for beers
-router.get("/beers", beersControllers.browse);
-router.get("/beers/:id", beersControllers.read);
-router.post("/beers", beersControllers.add);
-router.put("/beers/:id", beersControllers.edit);
+
+router.get("/beers", beersControllers.browse); // test OK
+router.get("/beers/:id", beersControllers.read); // test OK
+router.post("/beers", beersControllers.add); // test OK
+router.put("/beers/:id", beersControllers.edit); // test OK
+router.delete("/beers/:id", beersControllers.destroy); // test OK
 
 /* ************************************************************************* */
 

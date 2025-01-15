@@ -57,6 +57,31 @@ class BeersManager extends AbstractManager {
     );
     return result.rows[0].id;
   }
+
+  async delete(id) {
+    const client = await this.database.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      await client.query(`DELETE FROM "orderItems" WHERE beer_id = $1`, [id]);
+
+      const result = await client.query(
+        `DELETE FROM ${this.table} WHERE id = $1 RETURNING id`,
+        [id]
+      );
+
+      await client.query("COMMIT");
+
+      return result.rows.length > 0;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Erreur lors de la suppression:", err);
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 }
 
 module.exports = BeersManager;
