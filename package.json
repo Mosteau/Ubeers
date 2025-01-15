@@ -5,11 +5,13 @@
   "scripts": {
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && npm start",
-    "start:frontend": "cd frontend && npm run serve",
-    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "start:frontend": "cd frontend/Ubeers && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend/Ubeers && npm install",
+    "db:drop": "psql -h localhost -U postgres -c 'DROP DATABASE IF EXISTS ubeers;'",
+    "db:create": "psql -h localhost -U postgres -c 'CREATE DATABASE ubeers;'",
+    "db:setup": "npm run db:drop && npm run db:create && psql -h localhost -U postgres -d ubeers -f ./backend/database/schema.sql"
   },
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "vue-router": "^4.5.0"
+    "concurrently": "^7.6.0"
   }
 }
