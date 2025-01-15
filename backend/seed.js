@@ -1,49 +1,137 @@
-/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
-
-// Load environment variables from .env file
+/* eslint-disable no-plusplus */
+/* eslint-disable import/no-extraneous-dependencies */
 require("dotenv").config();
 
-// Import Faker library for generating fake data
 const { faker } = require("@faker-js/faker");
-
-// Import database client
 const database = require("./database/client");
 
 const seed = async () => {
   try {
-    // Declare an array to store the query promises
-    // See why here: https://eslint.org/docs/latest/rules/no-await-in-loop
+    await database.query(
+      'TRUNCATE TABLE "orderItems", orders, deliveries, beers, users RESTART IDENTITY CASCADE'
+    );
+
+    // Users - Insérer et attendre la fin
+    const userQueries = [];
+    for (let i = 0; i < 10; i++) {
+      const phoneNumber = parseInt(faker.string.numeric(9), 10);
+      const query = database.query(
+        `
+        INSERT INTO users 
+        (google_id, firstname, lastname, email, phone_number, zip_code, city) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id
+        `,
+        [
+          faker.number.int({ min: 1, max: 1000000 }),
+          faker.person.firstName(),
+          faker.person.lastName(),
+          faker.internet.email(),
+          phoneNumber,
+          parseInt(faker.location.zipCode("#####"), 10),
+          faker.location.city(),
+        ]
+      );
+      userQueries.push(query);
+    }
+    await Promise.all(userQueries);
+
+    // Autres insertions
     const queries = [];
 
-    /* ************************************************************************* */
-
-    // Generating Seed Data
-
-    // Optional: Truncate tables (remove existing data)
-    await database.query("truncate item");
-
-    // Insert fake data into the 'item' table
-    for (let i = 0; i < 10; i += 1) {
-      queries.push(
-        database.query("insert into item(title) values (?)", [
-          faker.lorem.word(),
-        ])
+    // Beers
+    for (let i = 0; i < 10; i++) {
+      const query = database.query(
+        `
+        INSERT INTO beers 
+        (label, brewery, type, alcohol_percent, price, stock_quantity, description) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `,
+        [
+          faker.commerce.productName(),
+          faker.company.name(),
+          faker.commerce.department(),
+          faker.number.float({ min: 3, max: 12, precision: 0.1 }),
+          faker.number.float({ min: 1, max: 10, precision: 0.01 }),
+          faker.number.int({ min: 0, max: 1000 }),
+          faker.lorem.sentence(),
+        ]
       );
+      queries.push(query);
     }
 
-    /* ************************************************************************* */
-
-    // Wait for all the insertion queries to complete
+    // Attendre la fin de l'insertion des bières
     await Promise.all(queries);
 
-    // Close the database connection
-    database.end();
+    // Deliveries
+    const deliveryQueries = [];
+    for (let i = 0; i < 10; i++) {
+      const query = database.query(
+        `
+        INSERT INTO deliveries 
+        (status, user_id) 
+        VALUES ($1, $2)
+        RETURNING id
+        `,
+        [
+          faker.helpers.arrayElement(["en attente", "en cours", "livrée"]),
+          faker.number.int({ min: 1, max: 10 }),
+        ]
+      );
+      deliveryQueries.push(query);
+    }
+    await Promise.all(deliveryQueries);
 
-    console.info(`${database.databaseName} filled from ${__filename} 🌱`);
+    // Orders
+    const orderQueries = [];
+    for (let i = 0; i < 10; i++) {
+      const query = database.query(
+        `
+        INSERT INTO orders 
+        (user_id, delivery_id, total_amount) 
+        VALUES ($1, $2, $3)
+        RETURNING id
+        `,
+        [
+          faker.number.int({ min: 1, max: 10 }),
+          faker.number.int({ min: 1, max: 10 }),
+          faker.number.float({ min: 10, max: 100, precision: 0.01 }),
+        ]
+      );
+      orderQueries.push(query);
+    }
+    await Promise.all(orderQueries);
+
+    // OrderItems
+    const orderItemQueries = [];
+    for (let i = 0; i < 20; i++) {
+      const query = database.query(
+        `
+        INSERT INTO "orderItems" 
+        (order_id, beer_id, quantity, unit_price) 
+        VALUES ($1, $2, $3, $4)
+        `,
+        [
+          faker.number.int({ min: 1, max: 10 }),
+          faker.number.int({ min: 1, max: 10 }),
+          faker.number.int({ min: 1, max: 10 }),
+          faker.number.float({ min: 1, max: 10, precision: 0.01 }),
+        ]
+      );
+      orderItemQueries.push(query);
+    }
+    await Promise.all(orderItemQueries);
+
+    // eslint-disable-next-line no-restricted-syntax
+    console.log("Base de données remplie avec succès !");
   } catch (err) {
-    console.error("Error filling the database:", err.message);
+    console.error(
+      "Erreur lors du remplissage de la base de données:",
+      err.message
+    );
+  } finally {
+    database.end();
   }
 };
 
-// Run the seed function
 seed();
