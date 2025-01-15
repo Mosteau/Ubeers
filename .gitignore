@@ -31,16 +31,5 @@ jspm_packages/
 # MacOS
 .DS_Store
 
-# Editor directories and files
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
-# Vue.js
-/dist/
-*.local
-*.env.local
-*.env.*.local
+# Ignore node_modules at the root
+/node_modules
