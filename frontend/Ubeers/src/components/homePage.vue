@@ -1,8 +1,10 @@
+<script lang='ts' setup>
+</script>
 <template>
     <div class="homepage">
         <h1>Ubeers</h1>
         <p>S'incrire</p>
-        <p>Se connecter</p>
+        <router-link to="/login">Se connecter</router-link>
     </div>
 </template>
 
