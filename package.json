@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "express-oauth2-jwt-bearer": "^1.6.0"
   }
 }

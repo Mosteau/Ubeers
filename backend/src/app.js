@@ -2,12 +2,28 @@
 
 const express = require("express");
 const cors = require("cors");
+const { auth } = require("express-oauth2-jwt-bearer");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Auth0 configuration
+const jwtCheck = auth({
+  audience: "http://ubeers.com",
+  issuerBaseURL: "https://dev-2b3l1vyfg2d4azrk.us.auth0.com/",
+  tokenSigningAlg: "RS256",
+});
+
+// Enforce JWT authentication on all endpoints
+app.use(jwtCheck);
+
+// Define a secured route
+app.get("/authorized", (req, res) => {
+  res.send("Secured Resource");
+});
 
 // Configure it
 
@@ -131,20 +147,15 @@ app.get("*", (req, res) => {
 // Middleware for Error Logging (Uncomment to enable)
 // Important: Error-handling middleware should be defined last, after other app.use() and routes calls.
 
-/*
 // Define a middleware function to log errors
 const logErrors = (err, req, res, next) => {
-  // Log the error to the console for debugging purposes
-  console.error(err);
+  console.error(err.stack);
   console.error("on req:", req.method, req.path);
-
-  // Pass the error to the next middleware in the stack
+  res.status(500).json({ error: "Une erreur interne est survenue." });
   next(err);
 };
-
 // Mount the logErrors middleware globally
 app.use(logErrors);
-*/
 
 /* ************************************************************************* */
 

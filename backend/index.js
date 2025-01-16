@@ -5,7 +5,7 @@ require("dotenv").config();
 const app = require("./src/app");
 
 // Get the port from the environment variables
-const port = process.env.APP_PORT;
+const port = process.env.APP_PORT || 8080;
 
 // Start the server and listen on the specified port
 app
