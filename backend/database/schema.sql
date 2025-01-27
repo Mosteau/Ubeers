@@ -15,7 +15,7 @@ CREATE TYPE status_enum AS ENUM (
 -- Create Users table
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    google_id integer,
+    user_id integer,
     firstname VARCHAR(60),
     lastname VARCHAR(60),
     email VARCHAR(250),
