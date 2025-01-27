@@ -5,46 +5,82 @@ class BeersManager extends AbstractManager {
     super({ table: "beers" });
   }
 
-  async create(beer) {
-    const [result] = await this.database.query(
-      `insert into ${this.table} (name, price, image, description, stock) values (?, ?, ?, ?, ?)`,
-      [beer.name, beer.price, beer.image, beer.description, beer.stock]
+  async readAll() {
+    const result = await this.database.query(
+      `SELECT id, 
+              label, 
+              brewery, 
+              type, 
+              alcohol_percent AS "alcoholPercent", 
+              price, 
+              stock_quantity AS "stockQuantity", 
+              description 
+       FROM ${this.table}`
     );
-
-    return result.insertId;
+    return result.rows;
   }
 
   async read(id) {
-    const [rows] = await this.database.query(
-      `select * from ${this.table} where id = ?`,
+    const result = await this.database.query(
+      `SELECT id, 
+              label, 
+              brewery, 
+              type, 
+              alcohol_percent AS "alcoholPercent", 
+              price, 
+              stock_quantity AS "stockQuantity", 
+              description 
+       FROM ${this.table} 
+       WHERE id = $1`,
       [id]
     );
-
-    return rows[0];
+    return result.rows[0] || null;
   }
 
-  async readAll() {
-    const [rows] = await this.database.query(`select * from ${this.table}`);
+  async create(beer) {
+    const {
+      label,
+      brewery,
+      type,
+      alcoholPercent,
+      price,
+      stockQuantity,
+      description,
+    } = beer;
 
-    return rows;
-  }
-
-  async update(beer) {
-    const [result] = await this.database.query(
-      `update ${this.table} set name = ?, price = ?, image = ?, description = ?, stock = ? where id = ?`,
-      [beer.name, beer.price, beer.image, beer.description, beer.stock, beer.id]
+    const result = await this.database.query(
+      `INSERT INTO ${this.table} 
+        (label, brewery, type, alcohol_percent, price, stock_quantity, description)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id`,
+      [label, brewery, type, alcoholPercent, price, stockQuantity, description]
     );
-
-    return result.affectedRows;
+    return result.rows[0].id;
   }
 
   async delete(id) {
-    const [result] = await this.database.query(
-      `delete from ${this.table} where id = ?`,
-      [id]
-    );
+    const client = await this.database.connect();
 
-    return result.affectedRows;
+    try {
+      await client.query("BEGIN");
+
+      await client.query(`DELETE FROM "orderItems" WHERE beer_id = $1`, [id]);
+
+      const result = await client.query(
+        `DELETE FROM ${this.table} WHERE id = $1 RETURNING id`,
+        [id]
+      );
+
+      await client.query("COMMIT");
+
+      return result.rows.length > 0;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Erreur lors de la suppression:", err);
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 }
 
