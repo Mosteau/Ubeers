@@ -18,7 +18,7 @@ app.use(
       redirect_uri: window.location.origin,
       audience: 'http://ubeers.com'
     },
-
+    cacheLocation: 'localstorage',
   })
 );
 

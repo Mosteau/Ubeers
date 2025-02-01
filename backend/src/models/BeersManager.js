@@ -5,6 +5,7 @@ class BeersManager extends AbstractManager {
     super({ table: "beers" });
   }
 
+  // Récupérer toutes les bières
   async readAll() {
     const result = await this.database.query(
       `SELECT id, 
@@ -20,6 +21,7 @@ class BeersManager extends AbstractManager {
     return result.rows;
   }
 
+  // Récupérer une bière par son ID
   async read(id) {
     const result = await this.database.query(
       `SELECT id, 
@@ -37,6 +39,7 @@ class BeersManager extends AbstractManager {
     return result.rows[0] || null;
   }
 
+  // Ajouter une nouvelle bière
   async create(beer) {
     const {
       label,
@@ -58,6 +61,7 @@ class BeersManager extends AbstractManager {
     return result.rows[0].id;
   }
 
+  // Supprimer une bière
   async delete(id) {
     const client = await this.database.connect();
 
@@ -81,6 +85,42 @@ class BeersManager extends AbstractManager {
     } finally {
       client.release();
     }
+  }
+
+  // Modifier une bière existante
+  async update(id, beer) {
+    const {
+      label,
+      brewery,
+      type,
+      alcoholPercent,
+      price,
+      stockQuantity,
+      description,
+    } = beer;
+    const result = await this.database.query(
+      `UPDATE ${this.table} 
+       SET label = $1, 
+           brewery = $2, 
+           type = $3, 
+           alcohol_percent = $4, 
+           price = $5, 
+           stock_quantity = $6, 
+           description = $7 
+       WHERE id = $8 
+       RETURNING *`,
+      [
+        label,
+        brewery,
+        type,
+        alcoholPercent,
+        price,
+        stockQuantity,
+        description,
+        id,
+      ]
+    );
+    return result.rows[0] || null;
   }
 }
 

@@ -3,9 +3,11 @@ const tables = require("../tables");
 // Récupérer toutes les bières
 const browse = async (req, res, next) => {
   try {
+    console.info("Fetching beers...");
     const beers = await tables.beers.readAll();
     res.json(beers);
   } catch (err) {
+    console.error("Error fetching beers:", err);
     next(err);
   }
 };
@@ -76,6 +78,7 @@ const edit = async (req, res, next) => {
       res.json(beer);
     }
   } catch (err) {
+    console.error("Erreur lors de la modification:", err);
     next(err);
   }
 };
