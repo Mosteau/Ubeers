@@ -1,13 +1,21 @@
-const API_URL = "http://localhost:3000";
-
-import type { Beer } from '@/types/Beer';
+import { useAuth0 } from '@auth0/auth0-vue';
+const API_URL = "http://localhost:3310/api";
 
 export const fetchBeers = async (): Promise<Beer[]> => {
   try {
-    const response = await fetch(`${API_URL}/beers`);
+    const { getAccessTokenSilently } = useAuth0();
+    const token = await getAccessTokenSilently();
+    
+    const response = await fetch(`${API_URL}/beers`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
     if (!response.ok) {
       throw new Error(`Erreur: ${response.status}`);
     }
+    
     const data: Beer[] = await response.json();
     return data;
   } catch (error) {
@@ -18,14 +26,23 @@ export const fetchBeers = async (): Promise<Beer[]> => {
 
 export const fetchBeerById = async (id: number): Promise<Beer> => {
   try {
-    const response = await fetch(`${API_URL}/beers/${id}`);
+    const { getAccessTokenSilently } = useAuth0();
+    const token = await getAccessTokenSilently();
+    
+    const response = await fetch(`${API_URL}/beers/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
     if (!response.ok) {
-      throw new Error (`Erreur: ${response.status}`);
+      throw new Error(`Erreur: ${response.status}`);
     }
-    const data: Beer = await response.json();
+    
+    const data: Beer[] = await response.json();
     return data;
   } catch (error) {
-    console.error(`Erreur lors de la récupération de la bière avec l'ID ${id} :`, error);
+    console.error("Erreur lors de la récupération des bières : ", error);
     throw error;
   }
 };

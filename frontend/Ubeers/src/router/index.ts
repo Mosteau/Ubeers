@@ -15,7 +15,7 @@ const routes = [
     component: CatalogueUbeers
   },
   {
-    path: '/catalogue/:id',
+    path: '/beers/:id',
     name: 'BeerDetails',
     component: BeerDetails
   }

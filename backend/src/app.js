@@ -118,37 +118,71 @@ const router = require("./router");
 
 // Mount the API routes under the "/api" endpoint
 app.use("/api", router);
+app.use((err, req, res) => {
+  console.error(`Erreur sur ${req.method} ${req.path}:`, err);
 
-/* ************************************************************************* */
+  // Erreurs d'authentification Auth0
+  if (err.name === "UnauthorizedError") {
+    return res.status(401).json({
+      status: "error",
+      code: "UNAUTHORIZED",
+      message: "Token invalide ou expiré",
+    });
+  }
 
-// Production-ready setup: What is it for, and when should I enable it?
+  // Erreurs de validation des données
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      status: "error",
+      code: "VALIDATION_ERROR",
+      message: "Données invalides",
+      details: err.details,
+    });
+  }
 
-// The code includes commented sections to set up a production environment where the frontend and backend are served from the same server.
+  // Erreurs de base de données
+  if (err.code === "ER_NO_REFERENCED_ROW") {
+    return res.status(400).json({
+      status: "error",
+      code: "DATABASE_CONSTRAINT_ERROR",
+      message: "Violation de contrainte de base de données",
+    });
+  }
 
-// What it's for:
-// - Serving frontend static files from the backend, which is useful when building a single-page application with React, Angular, etc.
-// - Redirecting unhandled requests (e.g., all requests not matching a defined API route) to the frontend's index.html. This allows the frontend to handle client-side routing.
+  // Erreurs 404 - Resource non trouvée
+  if (err.status === 404) {
+    return res.status(404).json({
+      status: "error",
+      code: "NOT_FOUND",
+      message: "Ressource non trouvée",
+    });
+  }
 
-// When to enable it:
-// It depends on your project and its structure. If you are developing a single-page application, you'll enable these sections when you are ready to deploy your project to production.
+  // Erreurs de requête malformée
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({
+      status: "error",
+      code: "INVALID_JSON",
+      message: "JSON malformé",
+    });
+  }
 
-// To enable production configuration:
-// 1. Uncomment the lines related to serving static files and redirecting unhandled requests.
-// 2. Ensure that the `reactBuildPath` points to the correct directory where your frontend's build artifacts are located.
-
-/*
-const reactBuildPath = `${__dirname}/../../frontend/dist`;
-
-// Serve react resources
-
-app.use(express.static(reactBuildPath));
-
-// Redirect unhandled requests to the react index file
-
-app.get("*", (req, res) => {
-  res.sendFile(`${reactBuildPath}/index.html`);
+  // Erreur par défaut (500)
+  return res.status(500).json({
+    status: "error",
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Erreur interne du serveur",
+  });
 });
-*/
+
+// Gestion des routes non trouvées
+app.use((req, res) => {
+  res.status(404).json({
+    status: "error",
+    code: "NOT_FOUND",
+    message: "Route non trouvée",
+  });
+});
 
 /* ************************************************************************* */
 
