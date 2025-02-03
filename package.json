@@ -13,5 +13,9 @@
   },
   "devDependencies": {
     "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express-oauth2-jwt-bearer": "^1.6.0"
   }
 }
