@@ -40,7 +40,7 @@ export const fetchBeerById = async (id: number): Promise<Beer> => {
       throw new Error(`Erreur: ${response.status}`);
     }
 
-    const data: Beer[] = await response.json();
+    const data: Beer = await response.json();
     return data;
   } catch (error) {
     console.error("Erreur lors de la récupération des bières : ", error);
