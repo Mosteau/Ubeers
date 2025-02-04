@@ -34,7 +34,8 @@ CREATE TABLE beers (
     alcohol_percent DECIMAL,
     price DECIMAL,
     stock_quantity INTEGER,
-    description VARCHAR(250)
+    description VARCHAR(250),
+    image_url VARCHAR(250)
 );
 
 -- Create Deliveries table
