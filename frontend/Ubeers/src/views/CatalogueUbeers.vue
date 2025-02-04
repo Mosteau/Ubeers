@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { fetchBeers } from '@/services/api';
 import type { Beer } from '@/types/Beer';
+import HeaderUbeer from '@/components/HeaderUbeer.vue';
 
 const { isAuthenticated } = useAuth0();
 const beers = ref<Beer[]>([]);
@@ -32,127 +33,33 @@ onMounted(async () => {
   }
 });
 </script>
-
 <template>
-  <div class="container-catalogue-ubeers">
-    <h1>Beers catalog</h1>
-
-    <div v-if="loading">Loading beers...</div>
-    <div v-if="error" class="error">Une erreur s'est produite : {{ error }}</div>
-
-    <div v-else class="beer-grid">
-      <div
-        v-for="beer in beers"
-        :key="beer.id"
-        class="beer-card"
-      >
-        <div class="beer-card-content">
-          <h3>{{ beer.label }}</h3>
-          <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="beer-image" />
-          <div class="beer-info">
-            <p><span>Type :</span> {{ beer.type }}</p>
-            <p><span>Alcool :</span> {{ beer.alcohol_percent ? beer.alcohol_percent + '%' : 'N/A' }}</p>
-            <p class="price">{{ beer.price }}€</p>
+  <HeaderUbeer />
+  <div class="bg-[#5B3A29] min-h-screen text-amber-300">
+    <div class="container mx-auto py-10 pt-24">
+      <div v-if="loading" class="text-center text-lg">Loading beers...</div>
+      <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div
+          v-for="beer in beers"
+          :key="beer.id"
+          class="bg-[#6D4C41] rounded-xl shadow-lg hover:shadow-2xl transition p-5 flex flex-col items-center"
+        >
+          <h3 class="text-xl font-semibold text-white mb-3">{{ beer.label }}</h3>
+          <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-40 h-40 object-cover mb-4 rounded-lg shadow-md" />
+          <div class="text-center mt-3">
+            <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
+            <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcohol_percent ? beer.alcohol_percent + '%' : 'N/A' }}</p>
+            <p class="text-lg font-bold text-amber-500 mt-2">{{ beer.price }}€</p>
           </div>
-          <router-link :to="`/beers/${beer.id}`" class="beer-link">Voir plus</router-link>
+          <router-link
+            :to="`/beers/${beer.id}`"
+            class="mt-4 bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition"
+          >
+            Voir plus
+          </router-link>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.container-catalogue-ubeers {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.beer-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px 0;
-}
-
-.beer-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden;
-}
-
-.beer-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.beer-card-content {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.beer-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.beer-info {
-  flex-grow: 1;
-}
-
-.beer-info p {
-  margin: 8px 0;
-  color: #666;
-}
-
-.beer-info span {
-  font-weight: bold;
-  color: #444;
-}
-
-.price {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #2c3e50;
-  margin: 15px 0;
-}
-
-.beer-link {
-  display: inline-block;
-  padding: 8px 16px;
-  background-color: #42b883;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-  text-align: center;
-}
-
-.beer-link:hover {
-  background-color: #3aa876;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .beer-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .beer-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .beer-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

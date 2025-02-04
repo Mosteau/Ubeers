@@ -19,26 +19,26 @@ toto();
 </script>
 
 <template>
-  <header class="header-ubeer">
-    <h1>Ubeers</h1>
-      <div>
-        <router-link to="/catalogue">Catalogue</router-link>
+  <header class="bg-[#5B3A29] bg-opacity-50 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+    <h1 class="text-2xl font-bold text-amber-500">Ubeers</h1>
+      <div class="flex items-center">
+        <nav>
+        <router-link to="/catalogue" class="text-yellow-400 hover:text-amber-300 transition font-medium">Catalogue</router-link>
+        </nav>
+        <button v-if="!isAuthenticated"
+          @click="login"
+          class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition ml-4"
+        >
+          Log in
+        </button>
+        <button v-if="isAuthenticated"
+          @click="handleLogout"
+          class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition ml-4"
+        >
+          Logout
+        </button>
       </div>
-      <div v-if="!isAuthenticated">
-        <button @click="login">Log in</button>
-      </div>
-      <div v-if="isAuthenticated">
-        <button @click="handleLogout">Logout</button>
-      </div>
+    </div>
   </header>
 </template>
-
-<style scoped>
-.header-ubeer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-}
-</style>

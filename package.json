@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start": "concurrently \"npm run dev --prefix frontend/Ubeers\" \"npm run start --prefix backend\"",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend/Ubeers && npm run dev",
     "install:all": "npm install && cd backend && npm install && cd ../frontend/Ubeers && npm install",
@@ -12,7 +12,9 @@
     "db:setup": "npm run db:drop && npm run db:create && psql -h localhost -U postgres -d ubeers -f ./backend/database/schema.sql"
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^7.6.0",
+    "typescript": "^5.7.3",
+    "vite-plugin-tailwindcss": "^0.0.0-0"
   },
   "dependencies": {
     "cors": "^2.8.5",
