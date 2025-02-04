@@ -2,9 +2,11 @@
   "files": [],
   "references": [
     {
+      "composite": true,
       "path": "./tsconfig.node.json"
     },
     {
+      "composite": true,
       "path": "./tsconfig.app.json"
     }
   ]
