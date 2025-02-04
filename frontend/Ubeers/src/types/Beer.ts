@@ -7,4 +7,5 @@ export interface Beer {
   price: number;
   stock_quantity: number;
   description: string;
+  imageUrl: string;
 }

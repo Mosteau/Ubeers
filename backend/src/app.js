@@ -1,7 +1,7 @@
 // Load the express module to create a web application
 
 const express = require("express");
-const cors = require("cors");
+const path = require("path");
 const { auth } = require("express-oauth2-jwt-bearer");
 
 const app = express();
@@ -9,9 +9,16 @@ const app = express();
 // eslint-disable-next-line no-restricted-syntax
 console.log("Hello from the backend!");
 
+const cors = require("cors");
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  "/assets",
+  express.static(path.join(__dirname, "..", "public", "assets"))
+);
 
 // Auth0 configuration
 const jwtCheck = auth({

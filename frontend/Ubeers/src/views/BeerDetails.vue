@@ -26,7 +26,7 @@ onMounted(async () => {
     loading.value = false;
     return;
   }
-  
+
   try {
     const id = Number(route.params.id);
     beer.value = await fetchBeerById(id);
@@ -44,10 +44,10 @@ onMounted(async () => {
 // supprimer une bière
 const deleteBeer = async () => {
   if (!beer.value?.id) return;
-  
+
   try {
     const token = await getAccessTokenSilently();
-    
+
     const response = await fetch(`${API_URL}${API_ENDPOINT}/${beer.value.id}`, {
       method: 'DELETE',
       headers: {
@@ -75,7 +75,7 @@ const startEditing = () => {
 
 const saveDescription = async () => {
   if (!beer.value?.id) return;
-  
+
   try {
     const response = await fetch(`${API_URL}${API_ENDPOINT}/${beer.value.id}`, {
       method: 'PUT',
@@ -107,11 +107,12 @@ const saveDescription = async () => {
     <div v-else-if="beer" class="beer-details">
       <h1>{{ beer.label }}</h1>
       <div class="beer-info">
+        <!-- <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="beer-image" /> -->
         <p><span>Brasserie :</span> {{ beer.brewery }}</p>
         <p><span>Type :</span> {{ beer.type }}</p>
         <p><span>Alcool :</span> {{ beer.alcohol_percent }}%</p>
         <p class="price">{{ beer.price }}€</p>
-        
+
         <div class="description-section">
           <span>Description :</span>
           <template v-if="!isEditing">
@@ -119,7 +120,7 @@ const saveDescription = async () => {
             <button @click="startEditing" class="edit-btn">Modifier la description</button>
           </template>
           <template v-else>
-            <textarea 
+            <textarea
               v-model="editedDescription"
               class="description-input"
             ></textarea>
@@ -129,10 +130,10 @@ const saveDescription = async () => {
             </div>
           </template>
         </div>
-        
+
         <p><span>Stock disponible :</span> {{ beer.stock_quantity }}</p>
       </div>
-      
+
       <div class="actions">
         <router-link to="/catalogue" class="back-link">Retour au catalogue</router-link>
         <button @click="deleteBeer" class="delete-btn">Supprimer la bière</button>

@@ -5,6 +5,7 @@ const browse = async (req, res, next) => {
   try {
     console.info("Fetching beers...");
     const beers = await tables.beers.readAll();
+    console.info("Beers fetched:", beers);
     res.json(beers);
   } catch (err) {
     console.error("Error fetching beers:", err);
@@ -37,6 +38,7 @@ const add = async (req, res, next) => {
       price,
       stockQuantity,
       description,
+      imageUrl,
     } = req.body;
 
     if (
@@ -45,7 +47,8 @@ const add = async (req, res, next) => {
       !type ||
       !alcoholPercent ||
       !price ||
-      !stockQuantity
+      !stockQuantity ||
+      !imageUrl
     ) {
       return res.status(400).json({
         message: "Tous les champs sont obligatoires",
@@ -60,6 +63,7 @@ const add = async (req, res, next) => {
       price,
       stockQuantity,
       description,
+      imageUrl,
     });
 
     return res.status(201).json({ insertId });
@@ -71,7 +75,10 @@ const add = async (req, res, next) => {
 // Modifier une bière existante
 const edit = async (req, res, next) => {
   try {
-    const beer = await tables.beers.update(req.params.id, req.body);
+    const beer = await tables.beers.update(req.params.id, {
+      ...req.body,
+      image_url: req.body.image_url, // Ajout
+    });
     if (beer == null) {
       res.sendStatus(404);
     } else {

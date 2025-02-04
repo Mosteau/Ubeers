@@ -8,6 +8,8 @@ const { isAuthenticated } = useAuth0();
 const beers = ref<Beer[]>([]);
 const loading = ref<boolean>(true);
 const error = ref<string | null>(null);
+const API_URL = import.meta.env.VITE_API_URL;
+console.log("API_URL:", API_URL);
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
@@ -15,9 +17,10 @@ onMounted(async () => {
     loading.value = false;
     return;
   }
-  
+
   try {
     beers.value = await fetchBeers();
+    console.log("Données des bières :", beers.value);
   } catch (err: unknown) {
     if (err instanceof Error) {
       error.value = err.message;
@@ -45,9 +48,10 @@ onMounted(async () => {
       >
         <div class="beer-card-content">
           <h3>{{ beer.label }}</h3>
+          <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="beer-image" />
           <div class="beer-info">
             <p><span>Type :</span> {{ beer.type }}</p>
-            <p><span>Alcool :</span> {{ beer.alcohol_percent }}%</p>
+            <p><span>Alcool :</span> {{ beer.alcohol_percent ? beer.alcohol_percent + '%' : 'N/A' }}</p>
             <p class="price">{{ beer.price }}€</p>
           </div>
           <router-link :to="`/beers/${beer.id}`" class="beer-link">Voir plus</router-link>

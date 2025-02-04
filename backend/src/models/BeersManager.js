@@ -8,15 +8,16 @@ class BeersManager extends AbstractManager {
   // Récupérer toutes les bières
   async readAll() {
     const result = await this.database.query(
-      `SELECT id, 
-              label, 
-              brewery, 
-              type, 
-              alcohol_percent AS "alcoholPercent", 
-              price, 
-              stock_quantity AS "stockQuantity", 
-              description 
-       FROM ${this.table}`
+      `SELECT id,
+              label,
+              brewery,
+              type,
+              alcohol_percent AS "alcoholPercent",
+              price,
+              stock_quantity AS "stockQuantity",
+              description,
+              image_url AS "imageUrl"
+      FROM ${this.table}`
     );
     return result.rows;
   }
@@ -24,16 +25,17 @@ class BeersManager extends AbstractManager {
   // Récupérer une bière par son ID
   async read(id) {
     const result = await this.database.query(
-      `SELECT id, 
-              label, 
-              brewery, 
-              type, 
-              alcohol_percent AS "alcoholPercent", 
-              price, 
-              stock_quantity AS "stockQuantity", 
-              description 
-       FROM ${this.table} 
-       WHERE id = $1`,
+      `SELECT id,
+              label,
+              brewery,
+              type,
+              alcohol_percent AS "alcoholPercent",
+              price,
+              stock_quantity AS "stockQuantity",
+              description,
+              image_url AS "imageUrl"
+      FROM ${this.table}
+      WHERE id = $1`,
       [id]
     );
     return result.rows[0] || null;
@@ -49,14 +51,24 @@ class BeersManager extends AbstractManager {
       price,
       stockQuantity,
       description,
+      imageUrl,
     } = beer;
 
     const result = await this.database.query(
-      `INSERT INTO ${this.table} 
-        (label, brewery, type, alcohol_percent, price, stock_quantity, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id`,
-      [label, brewery, type, alcoholPercent, price, stockQuantity, description]
+      `INSERT INTO ${this.table}
+        (label, brewery, type, alcohol_percent, price, stock_quantity, description, image_url)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id`,
+      [
+        label,
+        brewery,
+        type,
+        alcoholPercent,
+        price,
+        stockQuantity,
+        description,
+        imageUrl,
+      ]
     );
     return result.rows[0].id;
   }
@@ -97,17 +109,19 @@ class BeersManager extends AbstractManager {
       price,
       stockQuantity,
       description,
+      imageUrl,
     } = beer;
     const result = await this.database.query(
-      `UPDATE ${this.table} 
-       SET label = $1, 
-           brewery = $2, 
-           type = $3, 
-           alcohol_percent = $4, 
-           price = $5, 
-           stock_quantity = $6, 
-           description = $7 
-       WHERE id = $8 
+      `UPDATE ${this.table}
+      SET label = $1,
+          brewery = $2,
+          type = $3,
+          alcohol_percent = $4,
+          price = $5,
+          stock_quantity = $6,
+          description = $7,
+          image_url = $8
+      WHERE id = $9
        RETURNING *`,
       [
         label,
@@ -117,6 +131,7 @@ class BeersManager extends AbstractManager {
         price,
         stockQuantity,
         description,
+        imageUrl,
         id,
       ]
     );
