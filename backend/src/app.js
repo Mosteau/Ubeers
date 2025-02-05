@@ -46,22 +46,23 @@ app.use("/api", router);
 // Middleware for Error Logging (Uncomment to enable)
 
 // Define a middleware login errors
-const logErrors = (err, req, res, next) => {
-  console.error(err);
-  console.error(err.stack);
-  console.error("on req:", req.method, req.path);
-  next(err);
-};
+// const logErrors = (err, req, res, next) => {
+//   console.error(err);
+//   console.error(err.stack);
+//   console.error("on req:", req.method, req.path);
+//   next(err);
+// };
 
 // Mount the logErrors middleware globally
-app.use(logErrors);
+// app.use(logErrors);
 
 // Define a middleware for error handling
-app.use((err, req, res) => {
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
   console.error(`Erreur sur ${req.method} ${req.path}:`, err);
 
   // Erreurs d'authentification Auth0
-  if (err.name === "UnauthorizedError") {
+  if (err.name === "UnauthorizedError" || err.name === "InvalidTokenError") {
     return res.status(401).json({
       status: "error",
       code: "UNAUTHORIZED",
