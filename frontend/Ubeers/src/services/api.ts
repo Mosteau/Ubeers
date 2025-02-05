@@ -1,6 +1,6 @@
 import type { Beer } from '@/types/Beer';
 import { useAuth0 } from '@auth0/auth0-vue';
-const API_URL = "http://localhost:3310/api";
+const API_URL = `${import.meta.env.VUE_APP_API_URL}/api`;
 
 export const fetchBeers = async (): Promise<Beer[]> => {
   try {
