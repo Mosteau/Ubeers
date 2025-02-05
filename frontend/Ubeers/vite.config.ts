@@ -14,6 +14,9 @@ export default defineConfig({
       usePolling: true, // Force le rechargement des fichiers
     },
   },
+  css: {
+    postcss: './src/postcss.config.js'
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
