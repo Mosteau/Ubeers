@@ -58,7 +58,7 @@ const addBeer = async () => {
 
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] min-h-screen text-amber-300">
+  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
       <h1 class="text-3xl font-bold text-white mb-6">Ajouter une bière</h1>
       <div v-if="error" class="text-red-500 font-semibold">{{ error }}</div>

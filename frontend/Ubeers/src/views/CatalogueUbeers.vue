@@ -33,7 +33,7 @@ onMounted(async () => {
 </script>
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-50 backdrop-blur-md min-h-screen text-amber-300">
+  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
     <div class="container mx-auto py-10 pt-24">
       <div v-if="loading" class="text-center text-lg">Loading beers...</div>
       <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
