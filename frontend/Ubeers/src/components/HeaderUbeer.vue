@@ -26,7 +26,8 @@ toto();
       </router-link>
       <div class="flex items-center">
         <nav>
-        <router-link to="/catalogue" class="text-yellow-400 hover:text-amber-300 transition font-medium">Catalogue</router-link>
+        <router-link to="/addbeer" class="text-yellow-400 hover:text-amber-300 transition font-medium">Ajouter une bière</router-link>
+        <router-link to="/catalogue" class="text-yellow-400 hover:text-amber-300 transition font-medium ml-4">Catalogue</router-link>
         </nav>
         <button v-if="!isAuthenticated"
           @click="login"
