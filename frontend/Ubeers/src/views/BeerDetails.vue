@@ -101,7 +101,7 @@ const saveDescription = async () => {
 </script>
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] min-h-screen text-amber-300">
+  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
       <div v-if="loading" class="text-lg text-center">Chargement des détails...</div>
       <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
