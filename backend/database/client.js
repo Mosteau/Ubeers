@@ -1,5 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-
 const { Pool } = require("pg");
 
 // Get variables from .env file for database connection
