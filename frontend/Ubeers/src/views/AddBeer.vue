@@ -14,9 +14,9 @@ const beer = ref({
   label: "",
   brewery: "",
   type: "",
-  alcoholPercent: 0,
-  price: 0,
-  stockQuantity: 0,
+  alcoholPercent: null,
+  price: null,
+  stockQuantity: null,
   description: "",
   imageUrl: ""
 });
@@ -25,18 +25,14 @@ const error = ref<string | null>(null);
 const loading = ref(false);
 
 const addBeer = async () => {
-  console.log("Début de AddBeer")
   if (!isAuthenticated.value) {
     error.value = "Veuillez vous connecter pour ajouter une bière.";
-    console.log("Utilisateur non authentifié !");
     loading.value = true;
     return;
   }
 
   try {
     const token = await getAccessTokenSilently();
-    console.log("Token récupéré:", token);
-    console.log("Données envoyées:", JSON.stringify(beer.value));
 
     const response = await fetch(`${API_URL}${API_ENDPOINT}`, {
       method: "POST",
@@ -47,7 +43,6 @@ const addBeer = async () => {
       body: JSON.stringify({ ...beer.value })
     });
 
-    console.log("Réponse API:", response.status, response.statusText);
     if (!response.ok) {
       throw new Error("Erreur lors de l'ajout de la bière");
     }
@@ -76,7 +71,7 @@ const addBeer = async () => {
           <input type="number" v-model.number="beer.price" placeholder="Prix (€)" class="w-full p-2 rounded-lg" required />
           <input type="number" v-model.number="beer.stockQuantity" placeholder="Stock disponible" class="w-full p-2 rounded-lg" required />
           <textarea v-model="beer.description" placeholder="Description" class="w-full p-2 rounded-lg"></textarea>
-          <input v-model="beer.imageUrl" type="text" placeholder="/assets/images/beer1.jpeg" class="w-full p-2 rounded-lg text-white" />
+          <input type="text" v-model="beer.imageUrl" placeholder="/assets/images/beer1.jpeg" class="w-full p-2 rounded-lg text-white" />
         </div>
         <button type="submit" :disabled="loading" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
           {{ loading ? "Ajout en cours..." : "Ajouter la bière" }}
