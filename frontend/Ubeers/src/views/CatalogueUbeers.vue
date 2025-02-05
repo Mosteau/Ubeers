@@ -10,7 +10,6 @@ const beers = ref<Beer[]>([]);
 const loading = ref<boolean>(true);
 const error = ref<string | null>(null);
 const API_URL = import.meta.env.VITE_API_URL;
-console.log("API_URL:", API_URL);
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
@@ -21,7 +20,6 @@ onMounted(async () => {
 
   try {
     beers.value = await fetchBeers();
-    console.log("Données des bières :", beers.value);
   } catch (err: unknown) {
     if (err instanceof Error) {
       error.value = err.message;
@@ -35,7 +33,7 @@ onMounted(async () => {
 </script>
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] min-h-screen text-amber-300">
+  <div class="bg-[#5B3A29] bg-opacity-50 backdrop-blur-md min-h-screen text-amber-300">
     <div class="container mx-auto py-10 pt-24">
       <div v-if="loading" class="text-center text-lg">Loading beers...</div>
       <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
@@ -49,7 +47,7 @@ onMounted(async () => {
           <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-40 h-40 object-cover mb-4 rounded-lg shadow-md" />
           <div class="text-center mt-3">
             <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-            <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcohol_percent ? beer.alcohol_percent + '%' : 'N/A' }}</p>
+            <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent ? beer.alcoholPercent + '%' : 'N/A' }}</p>
             <p class="text-lg font-bold text-amber-500 mt-2">{{ beer.price }}€</p>
           </div>
           <router-link

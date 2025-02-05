@@ -3,9 +3,9 @@ export interface Beer {
   label: string;
   brewery: string;
   type: string;
-  alcohol_percent: number;
+  alcoholPercent: number;
   price: number;
-  stock_quantity: number;
+  stockQuantity: number;
   description: string;
   imageUrl: string;
 }

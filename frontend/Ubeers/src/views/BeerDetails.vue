@@ -115,9 +115,9 @@ const saveDescription = async () => {
         <div class="text-lg space-y-3">
           <p><span class="font-bold text-amber-400">Brasserie:</span> {{ beer.brewery }}</p>
           <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-          <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcohol_percent }}%</p>
+          <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent }}%</p>
           <p class="text-xl font-bold text-amber-500">{{ beer.price }}€</p>
-          <p><span class="font-bold text-amber-400">Stock disponible:</span> {{ beer.stock_quantity }}</p>
+          <p><span class="font-bold text-amber-400">Stock disponible:</span> {{ beer.stockQuantity }}</p>
         </div>
 
         <!-- Section Description avec édition -->
