@@ -25,4 +25,7 @@ router.get("/authorized", (req, res) => {
   res.send("Secured Resource");
 }); /* ************************************************************************* */
 
+// Route pour les logs Redis CRUD
+router.get("/beers/:id/logs", beersControllers.getBeerLogs);
+router.get("/beers-logs", beersControllers.getAllLogs);
 module.exports = router;
