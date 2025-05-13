@@ -33,3 +33,5 @@ jspm_packages/
 
 # Ignore node_modules at the root
 /node_modules
+
+./history
