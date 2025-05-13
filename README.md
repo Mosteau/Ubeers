@@ -1,5 +1,7 @@
 # Ubeers
 
+Projet réalisé dans le cadre d'un cours archi N TIERS et Services web B3 DEV IA avec Alexia NICOLEAU et Thibaut MOSTEAU.
+
 Ubeers est une application web pour la gestion de bières. Elle utilise Node.js avec Express pour le backend, PostgreSQL pour la base de données, et Vue.js pour le frontend.
 
 ## Prérequis
