@@ -15,29 +15,31 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <header class="bg-[#5B3A29] bg-opacity-50 backdrop-blur-md fixed top-0 w-full z-50 shadow-lg">
+  <header class="bg-white/10 backdrop-blur-md fixed top-0 w-full z-50 shadow-md border-b border-white/20">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
+      <!-- Logo -->
       <router-link to="/">
-        <h1 class="text-2xl font-bold text-amber-500">Ubeers</h1>
+        <h1 class="text-2xl font-bold text-white tracking-wide">Ubeers</h1>
       </router-link>
-      <div class="flex items-center">
-        <nav>
-          <router-link to="/addbeer" class="text-yellow-400 hover:text-amber-300 transition font-medium">Ajouter une bière</router-link>
-          <router-link to="/catalogue" class="text-yellow-400 hover:text-amber-300 transition font-medium ml-4">Catalogue</router-link>
-          <router-link to="/panier" class="text-yellow-400 hover:text-amber-300 transition font-medium ml-4 relative mr-6">
-            Panier
-            <span v-if="cartCount > 0" class="absolute -top-2 -right-6 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">{{ cartCount }}</span>
-          </router-link>
+      <!-- Nav + Auth -->
+      <div class="flex items-center space-x-4">
+        <nav class="flex space-x-4">
+          <router-link to="/addbeer" class="text-white hover:text-cyan-300 transition font-medium">Ajouter une bière</router-link>
+          <router-link to="/catalogue" class="text-white hover:text-cyan-300 transition font-medium">Catalogue</router-link>
+          <router-link to="/panier" class="text-white hover:text-cyan-300 transition font-medium">Panier</router-link>
         </nav>
-        <button v-if="!isAuthenticated"
+
+        <button
+          v-if="!isAuthenticated"
           @click="login"
-          class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition ml-4"
+          class="bg-cyan-600 text-white px-4 py-2 rounded-full hover:bg-cyan-700 transition"
         >
           Log in
         </button>
-        <button v-if="isAuthenticated"
+        <button
+          v-if="isAuthenticated"
           @click="handleLogout"
-          class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition ml-4"
+          class="bg-cyan-600 text-white px-4 py-2 rounded-full hover:bg-cyan-700 transition"
         >
           Logout
         </button>
@@ -45,3 +47,4 @@ const handleLogout = () => {
     </div>
   </header>
 </template>
+
