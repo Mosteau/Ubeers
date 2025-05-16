@@ -29,10 +29,11 @@ const read = async (req, res, next) => {
     if (beer == null) {
       res.sendStatus(404);
     } else {
-      // Log de la consultation d'une bière spécifique (optionnel)
-      // await logService.logBeerAction('read', beerId, {
-      //   userId: req.auth?.sub || 'anonymous'
-      // });
+      let beerLogs = await logService.getBeerLogs(beerId);
+      const updateLog = beerLogs.find(log => log.action === 'update');
+      if (updateLog) {
+        beer.lastUpdate = updateLog;
+      }
 
       res.json(beer);
     }
