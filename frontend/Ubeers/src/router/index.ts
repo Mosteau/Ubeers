@@ -3,6 +3,7 @@ import HomePage from '@/views/HomePage.vue';
 import CatalogueUbeers from '@/views/CatalogueUbeers.vue';
 import BeerDetails from '@/views/BeerDetails.vue';
 import AddBeer from '@/views/AddBeer.vue';
+import Cart from '@/views/Cart.vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/addBeer',
     name: 'AddBeer',
     component: AddBeer
+  },
+  {
+    path: '/panier',
+    name: 'Panier',
+    component: Cart
   }
 ];
 

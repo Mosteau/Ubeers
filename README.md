@@ -15,7 +15,7 @@ Ubeers est une application web pour la gestion de bières. Elle utilise Node.js 
 
 1. Clonez le dépôt :
     ```bash
-    git clone git@github.com:Mosteau/CroquiDex.git
+    git clone
     cd ubeers
     ```
 
