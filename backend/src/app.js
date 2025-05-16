@@ -115,6 +115,19 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Middleware pour servir le frontend Vue sur toutes les routes non-API/non-assets
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    !req.path.startsWith("/api") &&
+    !req.path.startsWith("/assets")
+  ) {
+    res.sendFile(path.join(__dirname, "../../frontend/Ubeers/dist/index.html"));
+  } else {
+    next();
+  }
+});
+
 // Gestion des routes non trouvées
 app.use((req, res) => {
   res.status(404).json({

@@ -81,6 +81,7 @@ onMounted(() => {
                 <td class="flex items-center py-3">
                   <img :src="`${API_URL}${item.beer.imageUrl}`" :alt="item.beer.label" class="w-16 h-16 object-cover rounded-lg mr-4" />
                   <span class="font-semibold text-white pr-0.5">{{ item.beer.label }}</span>
+
                 </td>
                 <td class="py-3">{{ item.beer.price }} €</td>
                 <td class="py-3">
@@ -90,6 +91,7 @@ onMounted(() => {
                     v-model.number="item.quantity"
                     @change="updateQuantity(item.beer.id, item.quantity)"
                     class="w-12 p-1 rounded text-amber-300"
+
                   />
                 </td>
                 <td class="py-3">{{ (item.beer.price * item.quantity).toFixed(2) }} €</td>
