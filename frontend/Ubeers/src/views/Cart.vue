@@ -1,0 +1,117 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuth0 } from "@auth0/auth0-vue";
+import HeaderUbeer from "@/components/HeaderUbeer.vue";
+import type { Beer } from "@/types/Beer";
+
+const { isAuthenticated } = useAuth0();
+const router = useRouter();
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Panier stocké dans le localStorage
+const cart = ref<{ beer: Beer; quantity: number }[]>([]);
+const error = ref<string | null>(null);
+
+const loadCart = () => {
+  const stored = localStorage.getItem("ubeers_cart");
+  cart.value = stored ? JSON.parse(stored) : [];
+};
+
+const saveCart = () => {
+  localStorage.setItem("ubeers_cart", JSON.stringify(cart.value));
+};
+
+const removeFromCart = (beerId: number) => {
+  cart.value = cart.value.filter((item) => item.beer.id !== beerId);
+  saveCart();
+};
+
+const updateQuantity = (beerId: number, qty: number) => {
+  const item = cart.value.find((i) => i.beer.id === beerId);
+  if (item) {
+    item.quantity = Math.max(1, qty);
+    saveCart();
+  }
+};
+
+const total = computed(() =>
+  cart.value.reduce((sum, item) => sum + item.beer.price * item.quantity, 0)
+);
+
+const goToCatalogue = () => {
+  router.push("/catalogue");
+};
+
+onMounted(() => {
+  if (!isAuthenticated.value) {
+    error.value = "Veuillez vous connecter pour accéder à votre panier.";
+    return;
+  }
+  loadCart();
+});
+</script>
+
+<template>
+  <HeaderUbeer />
+  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
+    <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
+      <h1 class="text-3xl font-bold text-white mb-6">Votre panier</h1>
+      <div v-if="error" class="text-red-500 font-semibold">{{ error }}</div>
+      <div v-else>
+        <div v-if="cart.length === 0" class="text-lg text-center mb-8">
+          Votre panier est vide.<br />
+          <button @click="goToCatalogue" class="mt-4 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition">
+            Voir le catalogue
+          </button>
+        </div>
+        <div v-else class="w-full max-w-3xl bg-[#6D4C41] rounded-xl shadow-lg p-6">
+          <table class="min-w-full divide-y divide-amber-800 mb-6">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Bière</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Prix</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Quantité</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in cart" :key="item.beer.id" class="border-b border-amber-800">
+                <td class="flex items-center py-3">
+                  <img :src="`${API_URL}${item.beer.imageUrl}`" :alt="item.beer.label" class="w-16 h-16 object-cover rounded-lg mr-4" />
+                  <span class="font-semibold text-white">{{ item.beer.label }}</span>
+                </td>
+                <td class="py-3">{{ item.beer.price }} €</td>
+                <td class="py-3">
+                  <input
+                    type="number"
+                    min="1"
+                    v-model.number="item.quantity"
+                    @change="updateQuantity(item.beer.id, item.quantity)"
+                    class="w-16 p-1 rounded text-black"
+                  />
+                </td>
+                <td class="py-3">{{ (item.beer.price * item.quantity).toFixed(2) }} €</td>
+                <td class="py-3">
+                  <button @click="removeFromCart(item.beer.id)" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">
+                    Retirer
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="flex justify-between items-center">
+            <span class="text-xl font-bold text-amber-400">Total :</span>
+            <span class="text-2xl font-bold text-white">{{ total.toFixed(2) }} €</span>
+          </div>
+          <div class="mt-6 flex justify-end">
+            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition" disabled>
+              Commander (bientôt)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
