@@ -4,10 +4,12 @@ import { useRouter } from "vue-router";
 import { useAuth0 } from "@auth0/auth0-vue";
 import HeaderUbeer from "@/components/HeaderUbeer.vue";
 import type { Beer } from "@/types/Beer";
+import { useCartCount } from "@/composables/useCartCount";
 
 const { isAuthenticated } = useAuth0();
 const router = useRouter();
 const API_URL = import.meta.env.VITE_API_URL;
+const { updateCartCount } = useCartCount();
 
 // Panier stocké dans le localStorage
 const cart = ref<{ beer: Beer; quantity: number }[]>([]);
@@ -25,6 +27,7 @@ const saveCart = () => {
 const removeFromCart = (beerId: number) => {
   cart.value = cart.value.filter((item) => item.beer.id !== beerId);
   saveCart();
+  updateCartCount();
 };
 
 const updateQuantity = (beerId: number, qty: number) => {
@@ -33,6 +36,7 @@ const updateQuantity = (beerId: number, qty: number) => {
     item.quantity = Math.max(1, qty);
     saveCart();
   }
+  updateCartCount();
 };
 
 const total = computed(() =>

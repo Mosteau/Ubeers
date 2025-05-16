@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import type { Beer } from '@/types/Beer';
 import HeaderUbeer from '@/components/HeaderUbeer.vue';
 import ModalAddPanier from '@/components/ModalAddPanier.vue';
+import { useCartCount } from '@/composables/useCartCount';
 
 const { isAuthenticated } = useAuth0();
 const beers = ref<Beer[]>([]);
@@ -15,6 +16,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const showPopup = ref(false);
 const popupMessage = ref('');
 const router = useRouter();
+const { updateCartCount } = useCartCount();
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
@@ -48,18 +50,22 @@ const addToCart = (beer: Beer) => {
   }
 
   localStorage.setItem('ubeers_cart', JSON.stringify(cart));
+  updateCartCount();
   popupMessage.value = `${beer.label} a été ajouté au panier !`;
   showPopup.value = true;
 };
 
 const closePopup = () => {
   showPopup.value = false;
+  updateCartCount();
 };
 
 const goToCart = () => {
   showPopup.value = false;
   router.push('/panier');
+  updateCartCount();
 };
+
 </script>
 
 <template>

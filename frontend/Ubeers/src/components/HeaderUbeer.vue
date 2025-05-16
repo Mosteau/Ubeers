@@ -1,7 +1,9 @@
 <script lang='ts' setup>
 import { useAuth0 } from '@auth0/auth0-vue';
+import { useCartCount } from '@/composables/useCartCount';
 
 const { loginWithRedirect, logout, isAuthenticated }= useAuth0();
+const { cartCount } = useCartCount();
 
 const login = () => {
   loginWithRedirect();
@@ -19,7 +21,6 @@ const handleLogout = () => {
       <router-link to="/">
         <h1 class="text-2xl font-bold text-white tracking-wide">Ubeers</h1>
       </router-link>
-
       <!-- Nav + Auth -->
       <div class="flex items-center space-x-4">
         <nav class="flex space-x-4">
