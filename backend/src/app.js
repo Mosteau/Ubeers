@@ -43,19 +43,6 @@ const router = require("./router");
 app.use("/api", router);
 /* ************************************************************************* */
 
-// Ajout du middleware pour servir le frontend Vue sur toutes les routes non-API/non-assets
-app.use((req, res, next) => {
-  if (
-    req.method === "GET" &&
-    !req.path.startsWith("/api") &&
-    !req.path.startsWith("/assets")
-  ) {
-    res.sendFile(path.join(__dirname, "../../frontend/Ubeers/dist/index.html"));
-  } else {
-    next();
-  }
-});
-
 // Middleware for Error Logging (Uncomment to enable)
 
 // Define a middleware login errors
@@ -126,6 +113,19 @@ app.use((err, req, res, next) => {
     code: "INTERNAL_SERVER_ERROR",
     message: "Erreur interne du serveur",
   });
+});
+
+// Middleware pour servir le frontend Vue sur toutes les routes non-API/non-assets
+app.use((req, res, next) => {
+  if (
+    req.method === "GET" &&
+    !req.path.startsWith("/api") &&
+    !req.path.startsWith("/assets")
+  ) {
+    res.sendFile(path.join(__dirname, "../../frontend/Ubeers/dist/index.html"));
+  } else {
+    next();
+  }
 });
 
 // Gestion des routes non trouvées
