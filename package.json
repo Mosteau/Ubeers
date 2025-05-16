@@ -12,6 +12,7 @@
     "db:setup": "npm run db:drop && npm run db:create && psql -h localhost -U postgres -d ubeers -f ./backend/database/schema.sql"
   },
   "devDependencies": {
+    "@vue/tsconfig": "^0.7.0",
     "concurrently": "^7.6.0",
     "typescript": "^5.7.3",
     "vite-plugin-tailwindcss": "^0.0.0-0"
