@@ -113,7 +113,8 @@ const edit = async (req, res, next) => {
     } else {
       // Log de la modification
       await logService.logBeerAction("update", beerId, {
-        userId: req.auth?.sub || "anonymous",
+        user: req.headers.username || "no username",
+        profile: req.headers.picture || "no profile picture",
         oldBeerData: oldBeer, // Données avant modification
         newBeerData: req.body, // Nouvelles données
       });
