@@ -18,7 +18,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
 
-const { getAccessTokenSilently } = useAuth0();
+const { getAccessTokenSilently, user } = useAuth0();
+const username = user.value?.name;
+const picture = user.value?.picture;
 const router = useRouter();
 
 onMounted(async () => {
@@ -82,7 +84,9 @@ const saveDescription = async () => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await getAccessTokenSilently()}`
+        'Authorization': `Bearer ${await getAccessTokenSilently()}`,
+        "username": username,
+        "picture": picture
       },
       body: JSON.stringify({
         ...beer.value,
