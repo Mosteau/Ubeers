@@ -24,9 +24,17 @@ const handleLogout = () => {
       <!-- Nav + Auth -->
       <div class="flex items-center space-x-4">
         <nav class="flex space-x-4">
-          <router-link to="/addbeer" class="text-neutral-700 hover:text-black font-medium transition">Ajouter une bière</router-link>
-          <router-link to="/catalogue" class="text-neutral-700 hover:text-black font-medium transition">Catalogue</router-link>
-          <router-link to="/panier" class="text-neutral-700 hover:text-black font-medium transition">Panier</router-link>
+          <router-link to="/addbeer" class="text-neutral-700 hover:text-black transition font-medium">Ajouter une bière</router-link>
+          <router-link to="/catalogue" class="text-neutral-700 hover:text-black transition font-medium">Catalogue</router-link>
+          <router-link to="/panier" class="text-neutral-700 hover:text-black transition font-medium relative">
+            Panier
+            <span
+              v-if="cartCount > 0"
+              class="absolute -top-2 -right-4 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+            >
+              {{ cartCount }}
+            </span>
+          </router-link>
         </nav>
 
         <button
@@ -47,4 +55,3 @@ const handleLogout = () => {
     </div>
   </header>
 </template>
-
