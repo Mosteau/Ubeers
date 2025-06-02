@@ -14,7 +14,9 @@
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",
     "@primevue/themes": "^4.2.5",
+    "@stripe/stripe-js": "^7.3.0",
     "primevue": "^4.2.5",
+    "stripe": "^18.2.0",
     "vue": "^3.5.13",
     "vue-router": "^4.0.12"
   },

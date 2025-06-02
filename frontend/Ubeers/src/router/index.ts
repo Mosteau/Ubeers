@@ -4,6 +4,7 @@ import CatalogueUbeers from '@/views/CatalogueUbeers.vue';
 import BeerDetails from '@/views/BeerDetails.vue';
 import AddBeer from '@/views/AddBeer.vue';
 import Cart from '@/views/Cart.vue';
+import Checkout from '@/views/Checkout.vue';
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/panier',
     name: 'Panier',
     component: Cart
+  },
+  {
+    path: '/checkout',
+    name: 'Checkout',
+    component: Checkout
   }
 ];
 

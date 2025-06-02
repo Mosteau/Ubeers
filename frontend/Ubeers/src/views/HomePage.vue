@@ -3,19 +3,17 @@ import HeaderUbeer from '@/components/HeaderUbeer.vue';
 </script>
 
 <template>
-  <div class="container-homepage">
+  <div class="container-homepage flex flex-col ">
     <HeaderUbeer/>
-    <div class="container-welcome">
-      <p>Welcome to Ubeers</p>
-      <p>Discover the best beers in the world</p>
+    <div class="container-welcome flex flex-col justify-center items-center text-7xl leading-relaxed flex-1 text-white">
+      <h1>Welcome to Ubeers</h1>
+      <h2>Discover the best beers in the world</h2>
     </div>
   </div>
 </template>
 
 <style scopted>
   .container-homepage {
-  display: flex;
-  flex-direction: column;
   height: 100vh;
   background-image: url('@/assets/bierefond.jpg');
   background-size: cover;
@@ -24,13 +22,21 @@ import HeaderUbeer from '@/components/HeaderUbeer.vue';
 }
 
 .container-welcome {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 32px;
-  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.8);
-  flex: 1;
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow:
+      2px 2px 0 #3b1d00,
+      4px 4px 8px #000000aa,
+      0 0 12px #d97706aa;
+  }
+  50% {
+    text-shadow:
+      2px 2px 0 #3b1d00,
+      4px 4px 8px #000000aa,
+      0 0 20px #b91c1c;
+  }
 }
 </style>
