@@ -3,14 +3,16 @@ import { useAuth0 } from '@auth0/auth0-vue';
 import { useCartCount } from '@/composables/useCartCount';
 
 const { loginWithRedirect, logout, isAuthenticated }= useAuth0();
-const { cartCount } = useCartCount();
+const { cartCount, updateCartCount } = useCartCount();
 
 const login = () => {
   loginWithRedirect();
 };
 
 const handleLogout = () => {
-  logout();
+  localStorage.removeItem('ubeers_cart');
+    updateCartCount();
+    logout();
 }
 </script>
 
