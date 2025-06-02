@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from '@auth0/auth0-vue'
 
 // Imports avec alias @
-import Homepage from '@/views/Homepage.vue'
+import HomePage from '@/views/HomePage.vue'
 import AddBeer from '@/views/AddBeer.vue'
 import CatalogueUbeers from '@/views/CatalogueUbeers.vue'
 import Cart from '@/views/Cart.vue'
@@ -16,7 +16,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: Homepage
+      component: HomePage
     },
     {
       path: '/addbeer',
