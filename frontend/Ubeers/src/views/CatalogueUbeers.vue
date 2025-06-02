@@ -61,6 +61,7 @@ const closePopup = () => {
 };
 
 const goToCart = () => {
+  showPopup.value = false;
   router.push('/panier');
   updateCartCount();
 };
@@ -69,49 +70,64 @@ const viewDetails = (beerId: number) => {
   router.push(`/beer/${beerId}`);
 };
 
-// Correction finale de handleImageError
+// Gestion des erreurs d'image
 const handleImageError = (event: Event) => {
   if (event.target && 'src' in event.target) {
-    (event.target as HTMLImageElement).src = '/placeholder-beer.jpg';
+    (event.target as HTMLImageElement).src = '/fallback-beer.png';
   }
 };
 </script>
 
 <template>
   <HeaderUbeer />
+
+  <!-- Fond -->
   <div class="min-h-screen pt-24 bg-[#f3e9dc] text-neutral-800">
     <div class="container mx-auto px-4 py-10">
-    </div>
-    <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
-      <h1 class="text-3xl font-bold text-gray-800 mb-8">Catalogue des bières</h1>
 
-      <div v-if="loading" class="text-gray-600">Chargement...</div>
-      <div v-else-if="error" class="text-red-500 font-semibold">{{ error }}</div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+      <!-- Chargement / erreur -->
+      <div v-if="loading" class="text-center text-neutral-800 text-lg">Chargement des bières...</div>
+      <div v-if="error" class="text-center text-red-600 font-semibold">{{ error }}</div>
+
+      <!-- Catalogue -->
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+      >
         <div
           v-for="beer in beers"
           :key="beer.id"
-          class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+          class="bg-[#c69c74] rounded-xl shadow-md hover:shadow-lg transition-all p-5 flex flex-col items-center"
         >
+          <h3 class="text-lg font-semibold text-neutral-800 mb-3 text-center tracking-wide">
+            {{ beer.label }}
+          </h3>
+
           <img
             :src="`${API_URL}${beer.imageUrl}`"
             :alt="beer.label"
-            class="w-full h-48 object-cover cursor-pointer"
-            @click="viewDetails(beer.id)"
             @error="handleImageError"
+            @click="viewDetails(beer.id)"
+            class="w-36 h-36 object-cover mb-4 rounded-md cursor-pointer hover:opacity-90 transition"
           />
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2 cursor-pointer hover:text-green-600 transition"
-                @click="viewDetails(beer.id)">
-              {{ beer.label }}
-            </h3>
-            <p class="text-gray-600 mb-1">{{ beer.brewery }}</p>
-            <p class="text-gray-600 mb-1">{{ beer.type }}</p>
-            <p class="text-gray-600 mb-3">{{ beer.alcoholPercent }}% vol.</p>
-            <p class="text-2xl font-bold text-green-600 mb-4">{{ beer.price }} €</p>
+
+          <div class="text-sm text-neutral-600 text-center space-y-1">
+            <p><span class="font-medium">Brasserie :</span> {{ beer.brewery }}</p>
+            <p><span class="font-medium">Type :</span> {{ beer.type }}</p>
+            <p><span class="font-medium">Alcool :</span> {{ beer.alcoholPercent ? beer.alcoholPercent + '%' : 'N/A' }}</p>
+            <p class="text-base font-bold text-neutral-800 mt-2">{{ beer.price }}€</p>
+          </div>
+
+          <div class="flex items-center justify-center gap-3 mt-4">
+            <button
+              @click="viewDetails(beer.id)"
+              class="bg-[#f3e9dc] text-neutral-800 px-4 py-2 rounded-full shadow-md hover:bg-[#c69c74] transition"
+            >
+              Voir plus
+            </button>
             <button
               @click="addToCart(beer)"
-              class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200 font-medium"
+              class="bg-[#f3e9dc] text-neutral-800 px-4 py-2 rounded-full shadow-md hover:bg-[#c69c74] transition"
             >
               Ajouter au panier
             </button>
@@ -121,6 +137,7 @@ const handleImageError = (event: Event) => {
     </div>
   </div>
 
+  <!-- Modale ajout panier -->
   <ModalAddPanier
     v-if="showPopup"
     :message="popupMessage"
