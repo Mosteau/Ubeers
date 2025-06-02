@@ -68,54 +68,6 @@ const goToCart = () => {
 
 </script>
 
-<!-- <template>
-  <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
-    <div class="container mx-auto py-10 pt-24">
-      <div v-if="loading" class="text-center text-lg">Loading beers...</div>
-      <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div
-          v-for="beer in beers"
-          :key="beer.id"
-          class="bg-[#6D4C41] rounded-xl shadow-lg hover:shadow-2xl transition p-5 flex flex-col items-center"
-        >
-          <h3 class="text-xl font-semibold text-white mb-3">{{ beer.label }}</h3>
-          <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-40 h-40 object-cover mb-4 rounded-lg shadow-md" />
-          <div class="text-center mt-3">
-            <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-            <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent ? beer.alcoholPercent + '%' : 'N/A' }}</p>
-            <p class="text-lg font-bold text-amber-500 mt-2">{{ beer.price }}€</p>
-          </div>
-          <div class="flex items-center justify-between mt-4 gap-2">
-            <router-link
-            :to="`/beers/${beer.id}`"
-            class="mt-4 bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition"
-            >
-              Voir plus
-            </router-link>
-            <button
-              @click="addToCart(beer)"
-              class="mt-4 bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition"
-            >
-              Ajouter au panier
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <ModalAddPanier
-    v-if="showPopup"
-    :message="popupMessage"
-    :showCartButton="true"
-    @close="closePopup"
-    @goToCart="goToCart"
-  />
-</template> -->
-
 <template>
   <HeaderUbeer />
 
