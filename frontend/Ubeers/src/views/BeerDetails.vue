@@ -1,37 +1,32 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
-import { useRoute } from 'vue-router';
+import { fetchBeers } from '@/services/api';
 import { useRouter } from 'vue-router';
-import { fetchBeerById } from "@/services/api";
-import type { Beer } from "@/types/Beer";
-import HeaderUbeer from "@/components/HeaderUbeer.vue";
-import { useCartCount } from "@/composables/useCartCount";
+import type { Beer } from '@/types/Beer';
+import HeaderUbeer from '@/components/HeaderUbeer.vue';
+import ModalAddPanier from '@/components/ModalAddPanier.vue';
+import { useCartCount } from '@/composables/useCartCount';
 
-const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
-const route = useRoute();
+const { isAuthenticated } = useAuth0();
+const beers = ref<Beer[]>([]);
+const loading = ref<boolean>(true);
+const error = ref<string | null>(null);
+const API_URL = import.meta.env.VITE_API_URL;
+const showPopup = ref(false);
+const popupMessage = ref('');
 const router = useRouter();
 const { updateCartCount } = useCartCount();
 
-const beer = ref<Beer | null>(null);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const showModal = ref(false);
-const API_URL = import.meta.env.VITE_API_URL;
-
 onMounted(async () => {
   if (!isAuthenticated.value) {
-    error.value = "Veuillez vous connecter pour voir les détails";
+    error.value = "Veuillez vous connecter pour voir le catalogue";
     loading.value = false;
     return;
   }
 
   try {
-    const beerId = Number(route.params.id);
-    if (isNaN(beerId)) {
-      throw new Error("ID de bière invalide");
-    }
-    beer.value = await fetchBeerById(beerId);
+    beers.value = await fetchBeers();
   } catch (err: unknown) {
     if (err instanceof Error) {
       error.value = err.message;
@@ -43,62 +38,41 @@ onMounted(async () => {
   }
 });
 
-const addToCart = () => {
-  if (!beer.value) return;
-
+const addToCart = (beer: Beer) => {
   const cart = JSON.parse(localStorage.getItem("ubeers_cart") || "[]");
-  const existingItem = cart.find((item: any) => item.beer.id === beer.value!.id);
+  const existingItem = cart.find((item: any) => item.beer.id === beer.id);
 
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
-    cart.push({ beer: beer.value, quantity: 1 });
+    cart.push({ beer, quantity: 1 });
   }
 
   localStorage.setItem("ubeers_cart", JSON.stringify(cart));
   updateCartCount();
-  showModal.value = true;
+
+  popupMessage.value = `${beer.label} a été ajouté au panier !`;
+  showPopup.value = true;
 };
 
-const closeModal = () => {
-  showModal.value = false;
+const closePopup = () => {
+  showPopup.value = false;
+  updateCartCount();
 };
 
 const goToCart = () => {
   router.push('/panier');
+  updateCartCount();
 };
 
-const deleteBeer = async () => {
-  if (!beer.value || !confirm("Êtes-vous sûr de vouloir supprimer cette bière ?")) return;
+const viewDetails = (beerId: number) => {
+  router.push(`/beer/${beerId}`);
+};
 
-  try {
-    const token = await getAccessTokenSilently();
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-
-    if (user.value?.name) {
-      headers['username'] = user.value.name;
-    }
-    if (user.value?.picture) {
-      headers['picture'] = user.value.picture;
-    }
-
-    const response = await fetch(`${API_URL}/api/beers/${beer.value.id}`, {
-      method: 'DELETE',
-      headers
-    });
-
-    if (response.ok) {
-      router.push('/catalogue');
-    } else {
-      throw new Error('Erreur lors de la suppression');
-    }
-  } catch (err) {
-    console.error('Erreur:', err);
-    error.value = "Erreur lors de la suppression de la bière";
+const handleImageError = (event: Event) => {
+  const target = event.target;
+  if (target && 'src' in target) {
+    (target as HTMLImageElement).src = '/placeholder-beer.jpg';
   }
 };
 </script>
@@ -107,65 +81,49 @@ const deleteBeer = async () => {
   <HeaderUbeer />
   <div class="bg-white min-h-screen">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
+      <h1 class="text-3xl font-bold text-gray-800 mb-8">Catalogue des bières</h1>
+
       <div v-if="loading" class="text-gray-600">Chargement...</div>
       <div v-else-if="error" class="text-red-500 font-semibold">{{ error }}</div>
-      <div v-else-if="beer" class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 max-w-2xl w-full">
-        <div class="flex flex-col md:flex-row gap-8">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+        <div
+          v-for="beer in beers"
+          :key="beer.id"
+          class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        >
           <img
             :src="`${API_URL}${beer.imageUrl}`"
             :alt="beer.label"
-            class="w-full md:w-64 h-64 object-cover rounded-lg"
+            class="w-full h-48 object-cover cursor-pointer"
+            @click="viewDetails(beer.id)"
+            @error="handleImageError"
           />
-          <div class="flex-1">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ beer.label }}</h1>
-            <div class="space-y-3 text-gray-600 mb-6">
-              <p><span class="font-semibold">Brasserie:</span> {{ beer.brewery }}</p>
-              <p><span class="font-semibold">Type:</span> {{ beer.type }}</p>
-              <p><span class="font-semibold">Taux d'alcool:</span> {{ beer.alcoholPercent }}%</p>
-              <p><span class="font-semibold">Prix:</span> {{ beer.price }} €</p>
-              <p><span class="font-semibold">Stock:</span> {{ beer.stockQuantity }}</p>
-              <p><span class="font-semibold">Description:</span> {{ beer.description }}</p>
-            </div>
-
-            <div class="flex gap-4">
-              <button
-                @click="addToCart"
-                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-              >
-                Ajouter au panier
-              </button>
-              <button
-                @click="deleteBeer"
-                class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-              >
-                Supprimer
-              </button>
-            </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2 cursor-pointer hover:text-green-600 transition"
+                @click="viewDetails(beer.id)">
+              {{ beer.label }}
+            </h3>
+            <p class="text-gray-600 mb-1">{{ beer.brewery }}</p>
+            <p class="text-gray-600 mb-1">{{ beer.type }}</p>
+            <p class="text-gray-600 mb-3">{{ beer.alcoholPercent }}% vol.</p>
+            <p class="text-2xl font-bold text-green-600 mb-4">{{ beer.price }} €</p>
+            <button
+              @click="addToCart(beer)"
+              class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200 font-medium"
+            >
+              Ajouter au panier
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Produit ajouté au panier !</h3>
-      <p class="text-gray-600 mb-6">{{ beer?.label }} a été ajouté à votre panier.</p>
-      <div class="flex gap-3">
-        <button
-          @click="closeModal"
-          class="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
-        >
-          Continuer
-        </button>
-        <button
-          @click="goToCart"
-          class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-        >
-          Voir le panier
-        </button>
-      </div>
-    </div>
-  </div>
+  <ModalAddPanier
+    v-if="showPopup"
+    :message="popupMessage"
+    :showCartButton="true"
+    @close="closePopup"
+    @goToCart="goToCart"
+  />
 </template>
