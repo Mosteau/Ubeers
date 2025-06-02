@@ -97,6 +97,7 @@ const saveDescription = async () => {
     if (response.ok) {
       beer.value.description = editedDescription.value;
       isEditing.value = false;
+      location.reload()
     }
   } catch (err) {
     console.error('Erreur lors de la modification:', err);
