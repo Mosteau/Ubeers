@@ -29,8 +29,8 @@ const read = async (req, res, next) => {
     if (beer == null) {
       res.sendStatus(404);
     } else {
-      let beerLogs = await logService.getBeerLogs(beerId);
-      const updateLog = beerLogs.find(log => log.action === 'update');
+      const beerLogs = await logService.getBeerLogs(beerId);
+      const updateLog = beerLogs.find((log) => log.action === "update");
       if (updateLog) {
         beer.lastUpdate = updateLog;
       }
