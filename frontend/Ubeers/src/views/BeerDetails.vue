@@ -17,10 +17,7 @@ const editedDescription = ref('');
 const API_URL = import.meta.env.VITE_API_URL;
 const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
-
 const { getAccessTokenSilently, user } = useAuth0();
-const username = user.value?.name;
-const picture = user.value?.picture;
 const router = useRouter();
 
 onMounted(async () => {
@@ -80,14 +77,21 @@ const saveDescription = async () => {
   if (!beer.value?.id) return;
 
   try {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${await getAccessTokenSilently()}`
+    };
+
+    if (user.value?.name) {
+      (headers as Record<string, string>)['username'] = user.value.name;
+    }
+    if (user.value?.picture) {
+      (headers as Record<string, string>)['picture'] = user.value.picture;
+    }
+
     const response = await fetch(`${API_URL}${API_ENDPOINT}/${beer.value.id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await getAccessTokenSilently()}`,
-        "username": username,
-        "picture": picture
-      },
+      headers,
       body: JSON.stringify({
         ...beer.value,
         description: editedDescription.value
@@ -97,52 +101,55 @@ const saveDescription = async () => {
     if (response.ok) {
       beer.value.description = editedDescription.value;
       isEditing.value = false;
-      location.reload()
+      location.reload();
     }
   } catch (err) {
     console.error('Erreur lors de la modification:', err);
   }
 };
 </script>
+
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
+  <div class="bg-white min-h-screen">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
-      <div v-if="loading" class="text-lg text-center">Chargement des détails...</div>
+      <div v-if="loading" class="text-lg text-center text-gray-600">Chargement des détails...</div>
       <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
 
-      <div v-else-if="beer" class="bg-[#6D4C41] rounded-xl shadow-lg p-6 w-full max-w-3xl">
-        <div class="flex flex-col items-center">
+      <div v-else-if="beer" class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 w-full max-w-3xl">
+        <div class="flex flex-col items-center mb-8">
           <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-48 h-48 object-cover rounded-lg shadow-md mb-4"/>
-          <h1 class="text-3xl font-bold text-white mb-4">{{ beer.label }}</h1>
+          <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ beer.label }}</h1>
         </div>
 
-        <div class="text-lg space-y-3">
-          <p><span class="font-bold text-amber-400">Brasserie:</span> {{ beer.brewery }}</p>
-          <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-          <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent }}%</p>
-          <p class="text-xl font-bold text-amber-500">{{ beer.price }}€</p>
-          <p><span class="font-bold text-amber-400">Stock disponible:</span> {{ beer.stockQuantity }}</p>
+        <div class="text-lg space-y-3 text-gray-700 mb-6">
+          <p><span class="font-bold text-green-600">Brasserie:</span> {{ beer.brewery }}</p>
+          <p><span class="font-bold text-green-600">Type:</span> {{ beer.type }}</p>
+          <p><span class="font-bold text-green-600">Alcool:</span> {{ beer.alcoholPercent }}%</p>
+          <p class="text-xl font-bold text-green-600">{{ beer.price }}€</p>
+          <p><span class="font-bold text-green-600">Stock disponible:</span> {{ beer.stockQuantity }}</p>
         </div>
 
         <!-- Section Description avec édition -->
         <div class="mt-6">
-          <span class="font-bold text-amber-400">Description:</span>
+          <span class="font-bold text-green-600">Description:</span>
           <template v-if="!isEditing">
-            <p class="mt-2">{{ beer.description }}</p>
-            <button @click="startEditing" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+            <p class="mt-2 text-gray-700">{{ beer.description }}</p>
+            <button @click="startEditing" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
               Modifier la description
             </button>
-            <div v-if="beer.lastUpdate" >Dernière modification: {{ beer.lastUpdate.data.user || "inconnu" }}</div>
+            <div v-if="beer.lastUpdate" class="mt-2 text-sm text-gray-500">
+              Dernière modification: {{ typeof beer.lastUpdate === 'object' ? (beer.lastUpdate as any)?.data?.user || "inconnu" : beer.lastUpdate }}
+            </div>
           </template>
 
           <template v-else>
-            <textarea v-model="editedDescription" class="w-full h-24 p-2 mt-2 text-black rounded-lg"></textarea>
+            <textarea v-model="editedDescription" class="w-full h-24 p-2 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"></textarea>
             <div class="mt-3 flex justify-between">
-              <button @click="saveDescription" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+              <button @click="saveDescription" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
                 Sauvegarder
               </button>
-              <button @click="isEditing = false" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+              <button @click="isEditing = false" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
                 Annuler
               </button>
             </div>
@@ -151,7 +158,7 @@ const saveDescription = async () => {
 
         <!-- Actions -->
         <div class="mt-6 flex justify-between">
-          <router-link to="/catalogue" class="bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition">
+          <router-link to="/catalogue" class="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition">
             Retour au catalogue
           </router-link>
           <button @click="deleteBeer" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition">
