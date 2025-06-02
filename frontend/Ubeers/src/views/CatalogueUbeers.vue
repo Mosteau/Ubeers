@@ -68,7 +68,7 @@ const goToCart = () => {
 
 </script>
 
-<template>
+<!-- <template>
   <HeaderUbeer />
   <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
     <div class="container mx-auto py-10 pt-24">
@@ -106,7 +106,74 @@ const goToCart = () => {
     </div>
   </div>
 
-  <!-- Modale -->
+
+  <ModalAddPanier
+    v-if="showPopup"
+    :message="popupMessage"
+    :showCartButton="true"
+    @close="closePopup"
+    @goToCart="goToCart"
+  />
+</template> -->
+
+<template>
+  <HeaderUbeer />
+
+  <!-- Fond -->
+  <div class="min-h-screen pt-24 bg-[#f3e9dc] text-neutral-800">
+    <div class="container mx-auto px-4 py-10">
+
+      <!-- Chargement / erreur -->
+      <div v-if="loading" class="text-center text-white/80 text-lg">Chargement des bières...</div>
+      <div v-if="error" class="text-center text-red-400 font-semibold">{{ error }}</div>
+
+      <!-- Catalogue -->
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+      >
+      <div
+        v-for="beer in beers"
+        :key="beer.id"
+        class="bg-[#c69c74] rounded-xl shadow-md hover:shadow-lg transition-all p-5 flex flex-col items-center"
+      >
+        <h3 class="text-lg font-semibold text-neutral-800 mb-3 text-center tracking-wide">
+          {{ beer.label }}
+        </h3>
+
+        <img
+          :src="`${API_URL}${beer.imageUrl}`"
+          :alt="beer.label"
+          @error="$event.target.src = '/fallback-beer.png'"
+          class="w-36 h-36 object-cover mb-4 rounded-md"
+        />
+
+        <div class="text-sm text-neutral-600 text-center space-y-1">
+          <p><span class="font-medium">Type :</span> {{ beer.type }}</p>
+          <p><span class="font-medium">Alcool :</span> {{ beer.alcoholPercent ? beer.alcoholPercent + '%' : 'N/A' }}</p>
+          <p class="text-base font-bold text-neutral-800 mt-2">{{ beer.price }}€</p>
+        </div>
+
+        <div class="flex items-center justify-center gap-3 mt-4">
+          <router-link
+            :to="`/beers/${beer.id}`"
+            class="bg-[#f3e9dc] text-neutral-800 px-4 py-2 rounded-full shadow-md hover:bg-[#c69c74] transition"
+          >
+            Voir plus
+          </router-link>
+          <button
+            @click="addToCart(beer)"
+            class="bg-[#f3e9dc] text-neutral-800 px-4 py-2 rounded-full shadow-md hover:bg-[#c69c74] transition"
+          >
+            Ajouter au panier
+          </button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale ajout panier -->
   <ModalAddPanier
     v-if="showPopup"
     :message="popupMessage"
@@ -115,3 +182,4 @@ const goToCart = () => {
     @goToCart="goToCart"
   />
 </template>
+
