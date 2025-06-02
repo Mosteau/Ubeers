@@ -49,7 +49,6 @@ const goToCatalogue = () => {
   router.push('/catalogue');
 };
 
-// Vider le panier après un paiement réussi
 onMounted(() => {
   localStorage.removeItem('ubeers_cart');
   updateCartCount();
