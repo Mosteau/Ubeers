@@ -4,6 +4,7 @@ import CatalogueUbeers from '@/views/CatalogueUbeers.vue';
 import BeerDetails from '@/views/BeerDetails.vue';
 import AddBeer from '@/views/AddBeer.vue';
 import Cart from '@/views/Cart.vue';
+import Checkout from '@/views/Checkout.vue';
 
 const routes = [
   {
@@ -34,7 +35,7 @@ const routes = [
   {
     path: '/checkout',
     name: 'Checkout',
-    component: () => import('@/views/Checkout.vue'),
+    component: Checkout
   }
 ];
 
