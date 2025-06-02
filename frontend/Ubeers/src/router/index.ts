@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from '@auth0/auth0-vue'
 
-// Imports statiques
-import Homepage from '../views/Homepage.vue'
-import AddBeer from '../views/AddBeer.vue'
-import CatalogueUbeers from '../views/CatalogueUbeers.vue'
-import Cart from '../views/Cart.vue'
-import BeerDetails from '../views/BeerDetails.vue'
-import PaymentSuccess from '../views/PaymentSuccess.vue'
-import PaymentCancel from '../views/PaymentCancel.vue'
+// Imports avec alias @
+import Homepage from '@/views/Homepage.vue'
+import AddBeer from '@/views/AddBeer.vue'
+import CatalogueUbeers from '@/views/CatalogueUbeers.vue'
+import Cart from '@/views/Cart.vue'
+import BeerDetails from '@/views/BeerDetails.vue'
+import PaymentSuccess from '@/views/PaymentSuccess.vue'
+import PaymentCancel from '@/views/PaymentCancel.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
