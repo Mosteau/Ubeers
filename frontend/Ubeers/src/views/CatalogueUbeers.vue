@@ -79,7 +79,9 @@ const handleImageError = (event: Event) => {
 
 <template>
   <HeaderUbeer />
-  <div class="bg-white min-h-screen">
+  <div class="min-h-screen pt-24 bg-[#f3e9dc] text-neutral-800">
+    <div class="container mx-auto px-4 py-10">
+    </div>
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
       <h1 class="text-3xl font-bold text-gray-800 mb-8">Catalogue des bières</h1>
 

@@ -8,5 +8,5 @@ export interface Beer {
   stockQuantity: number;
   description: string;
   imageUrl: string;
-  lastUpdate?: string;
+  lastUpdate?: string | { data: { user: string } };
 }

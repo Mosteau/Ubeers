@@ -98,25 +98,25 @@ onMounted(() => {
 
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
+  <div class="bg-[#f3e9dc] bg-opacity-70 backdrop-blur-md min-h-screen text-neutral-800">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
-      <h1 class="text-3xl font-bold text-white mb-6">Votre panier</h1>
+      <h1 class="text-3xl font-bold text-neutral-800 mb-6">Votre panier</h1>
       <div v-if="error" class="text-red-500 font-semibold">{{ error }}</div>
       <div v-else>
-        <div v-if="cart.length === 0" class="text-lg text-center mb-8">
+        <div v-if="cart.length === 0" class="text-lg text-neutral-800 text-center mb-8">
           Votre panier est vide.<br />
-          <button @click="goToCatalogue" class="mt-4 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition">
+          <button @click="goToCatalogue" class="mt-4 bg-[#f3e9dc] text-neutral-800 px-4 py-2 rounded-lg hover:bg-[#c69c74] transition">
             Voir le catalogue
           </button>
         </div>
-        <div v-else class="w-full max-w-3xl bg-[#6D4C41] rounded-xl shadow-lg p-6">
+        <div v-else class="w-full max-w-3xl bg-[#c69c74] rounded-xl shadow-lg p-6">
           <table class="min-w-full divide-y divide-amber-800 mb-6">
             <thead>
               <tr>
-                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Bière</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Prix</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Quantité</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-amber-400 uppercase">Total</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-neutral-800 uppercase">Bière</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-neutral-800 uppercase">Prix</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-neutral-800 uppercase">Quantité</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-neutral-800 uppercase">Total</th>
                 <th></th>
               </tr>
             </thead>
@@ -124,7 +124,7 @@ onMounted(() => {
               <tr v-for="item in cart" :key="item.beer.id" class="border-b border-amber-800">
                 <td class="flex items-center py-3">
                   <img :src="`${API_URL}${item.beer.imageUrl}`" :alt="item.beer.label" class="w-16 h-16 object-cover rounded-lg mr-4" />
-                  <span class="font-semibold text-white pr-0.5">{{ item.beer.label }}</span>
+                  <span class="font-semibold text-neutral-800 pr-0.5">{{ item.beer.label }}</span>
 
                 </td>
                 <td class="py-3">{{ item.beer.price }} €</td>
@@ -134,13 +134,13 @@ onMounted(() => {
                     min="1"
                     v-model.number="item.quantity"
                     @change="updateQuantity(item.beer.id, item.quantity)"
-                    class="w-12 p-1 rounded text-amber-300"
+                    class="w-12 p-1 rounded text-neutral-800 bg-[#f3e9dc]"
 
                   />
                 </td>
                 <td class="py-3">{{ (item.beer.price * item.quantity).toFixed(2) }} €</td>
                 <td class="py-3">
-                  <button @click="removeFromCart(item.beer.id)" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">
+                  <button @click="removeFromCart(item.beer.id)" class="bg-[#f3e9dc] text-neutral-800 px-3 py-1 rounded shadow-md hover:bg-[#c69c74] transition">
                     Retirer
                   </button>
                 </td>
@@ -148,14 +148,14 @@ onMounted(() => {
             </tbody>
           </table>
           <div class="flex justify-between items-center">
-            <span class="text-xl font-bold text-amber-400">Total :</span>
-            <span class="text-2xl font-bold text-white">{{ total.toFixed(2) }} €</span>
+            <span class="text-xl font-bold text-neutral-800">Total :</span>
+            <span class="text-2xl font-bold text-neutral-800">{{ total.toFixed(2) }} €</span>
           </div>
           <div class="mt-6 flex justify-end">
             <button
               @click="handleCheckout"
               :disabled="isProcessingPayment || cart.length === 0"
-              class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-2"
+              class="bg-[#f3e9dc] text-neutral-800 px-6 py-2 rounded-lg hover:bg-green-700 shadow-md hover:bg-[#c69c74] transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               <span v-if="isProcessingPayment">Traitement en cours...</span>
               <span v-else>Procéder au paiement</span>

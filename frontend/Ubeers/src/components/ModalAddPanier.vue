@@ -23,19 +23,19 @@ const onGoToCart = () => {
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-[#5B3A29] p-6 rounded-lg shadow-lg text-center">
-      <p class="text-lg font-semibold mb-4 text-amber-300">{{ message }}</p>
+    <div class="bg-[#c69c74] p-6 rounded-lg shadow-lg text-center">
+      <p class="text-lg font-semibold mb-4 text-neutral-800">{{ message }}</p>
       <div class="flex justify-center gap-4">
         <button
           @click="onClose"
-          class="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition"
+          class="bg-[#f3e9dc] text-neutral-800 py-2 px-4 rounded-lg shadow-md hover:bg-[#c69c74] transition"
         >
           OK
         </button>
         <button
           v-if="showCartButton"
           @click="onGoToCart"
-          class="bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition"
+          class="bg-[#f3e9dc] text-neutral-800 py-2 px-4 rounded-lg shadow-md hover:bg-[#c69c74] transition"
         >
           Voir panier
         </button>

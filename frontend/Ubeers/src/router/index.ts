@@ -1,47 +1,49 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import HomePage from '@/views/HomePage.vue';
-import CatalogueUbeers from '@/views/CatalogueUbeers.vue';
-import BeerDetails from '@/views/BeerDetails.vue';
-import AddBeer from '@/views/AddBeer.vue';
-import Cart from '@/views/Cart.vue';
-import Checkout from '@/views/Checkout.vue';
-
-const routes = [
-  {
-    path: '/',
-    name: 'HomePage',
-    component: HomePage
-  },
-  {
-    path: '/catalogue',
-    name: 'CatalogueUbeers',
-    component: CatalogueUbeers
-  },
-  {
-    path: '/beers/:id',
-    name: 'BeerDetails',
-    component: BeerDetails
-  },
-  {
-    path: '/addBeer',
-    name: 'AddBeer',
-    component: AddBeer
-  },
-  {
-    path: '/panier',
-    name: 'Panier',
-    component: Cart
-  },
-  {
-    path: '/checkout',
-    name: 'Checkout',
-    component: Checkout
-  }
-];
+import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from '@auth0/auth0-vue'
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
-});
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: () => import('../views/Homepage.vue')
+    },
+    {
+      path: '/addbeer',
+      name: 'AddBeer',
+      component: () => import('../views/AddBeer.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/catalogue',
+      name: 'Catalogue',
+      component: () => import('../views/CatalogueUbeers.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/panier',
+      name: 'Cart',
+      component: () => import('../views/Cart.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/beer/:id',
+      name: 'BeerDetails',
+      component: () => import('../views/BeerDetails.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/payment/success',
+      name: 'PaymentSuccess',
+      component: () => import('../views/PaymentSuccess.vue')
+    },
+    {
+      path: '/payment/cancel',
+      name: 'PaymentCancel',
+      component: () => import('../views/PaymentCancel.vue')
+    }
+  ]
+})
 
-export default router;
+export default router
