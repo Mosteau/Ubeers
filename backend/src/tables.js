@@ -3,12 +3,10 @@
 /* ************************************************************************* */
 
 // Import the manager modules responsible for handling data operations on the tables
-const ItemManager = require("./models/BeersManager");
 const UserManager = require("./models/UserManager");
 const BeersManager = require("./models/BeersManager");
 
 const managers = [
-  ItemManager,
   UserManager,
   BeersManager,
   // Add other managers here

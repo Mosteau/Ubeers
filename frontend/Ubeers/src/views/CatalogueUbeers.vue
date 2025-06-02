@@ -26,6 +26,7 @@ onMounted(async () => {
   }
 
   try {
+    loading.value = true;
     beers.value = await fetchBeers();
   } catch (err: unknown) {
     if (err instanceof Error) {

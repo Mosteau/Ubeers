@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const cartCount = ref(0);
 
@@ -23,7 +23,15 @@ export function useCartCount() {
   // Met à jour le compteur au montage et lors des changements du localStorage
   onMounted(() => {
     updateCartCount();
+
+    // Éviter les doublons d'event listeners
+    window.removeEventListener('storage', updateCartCount);
     window.addEventListener('storage', updateCartCount);
+  });
+
+  // Nettoyer l'event listener
+  onUnmounted(() => {
+    window.removeEventListener('storage', updateCartCount);
   });
 
   return { cartCount, updateCartCount };
