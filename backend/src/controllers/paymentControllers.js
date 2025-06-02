@@ -1,4 +1,3 @@
-// backend/src/controllers/paymentController.js
 const { createCheckoutSession } = require('../services/stripeService');
 
 async function createSession(req, res) {

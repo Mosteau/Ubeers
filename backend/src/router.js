@@ -29,7 +29,7 @@ router.get("/authorized", (req, res) => {
 // Route pour les logs Redis CRUD
 router.get("/beers/:id/logs", beersControllers.getBeerLogs);
 router.get("/beers-logs", beersControllers.getAllLogs);
-module.exports = router;
+
 
 // Route pour le système de paiement stripe
 router.post('/payment/create-checkout-session', paymentController.createSession);
