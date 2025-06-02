@@ -11,7 +11,7 @@ export default defineConfig({
   ],
   server: {
     watch: {
-      usePolling: true, // Force le rechargement des fichiers
+      usePolling: true,
     },
   },
   css: {

@@ -1,5 +1,3 @@
-Collecte des informations sur l’espace de travail# Documentation Redis pour le cache des opérations sur les bières
-
 ## Vue d'ensemble
 
 Le système Redis implémenté dans votre application Ubeers permet de stocker et gérer les logs des opérations CRUD (Create, Read, Update, Delete) sur les bières. Cette fonctionnalité offre un système de traçabilité et d'audit pour toutes les actions effectuées sur les bières.
@@ -191,5 +189,3 @@ GET /api/beers-logs?limit=100
 - Les logs peuvent contenir des données sensibles
 - Implémenter une authentification Redis en production
 - Considérer le chiffrement des données sensibles
-
-Cette implémentation offre une solution robuste et performante pour le logging des opérations sur les bières dans votre application Ubeers.
