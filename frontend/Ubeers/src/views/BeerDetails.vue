@@ -101,28 +101,28 @@ const saveDescription = async () => {
 </script>
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
+  <div class="bg-[#f3e9dc] bg-opacity-70 backdrop-blur-md min-h-screen text-neutral-800 shadow-lg">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
       <div v-if="loading" class="text-lg text-center">Chargement des détails...</div>
       <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
 
-      <div v-else-if="beer" class="bg-[#6D4C41] rounded-xl shadow-lg p-6 w-full max-w-3xl">
+      <div v-else-if="beer" class="bg-[#c69c74] rounded-xl shadow-lg p-6 w-full max-w-3xl">
         <div class="flex flex-col items-center">
           <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-48 h-48 object-cover rounded-lg shadow-md mb-4"/>
-          <h1 class="text-3xl font-bold text-white mb-4">{{ beer.label }}</h1>
+          <h1 class="text-3xl font-bold text-neutral-800 mb-4">{{ beer.label }}</h1>
         </div>
 
         <div class="text-lg space-y-3">
-          <p><span class="font-bold text-amber-400">Brasserie:</span> {{ beer.brewery }}</p>
-          <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-          <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent }}%</p>
-          <p class="text-xl font-bold text-amber-500">{{ beer.price }}€</p>
-          <p><span class="font-bold text-amber-400">Stock disponible:</span> {{ beer.stockQuantity }}</p>
+          <p><span class="font-bold text-neutral-800">Brasserie:</span> {{ beer.brewery }}</p>
+          <p><span class="font-bold text-neutral-800">Type:</span> {{ beer.type }}</p>
+          <p><span class="font-bold text-neutral-800">Alcool:</span> {{ beer.alcoholPercent }}%</p>
+          <p class="text-xl font-bold text-neutral-800">{{ beer.price }}€</p>
+          <p><span class="font-bold text-neutral-800">Stock disponible:</span> {{ beer.stockQuantity }}</p>
         </div>
 
         <!-- Section Description avec édition -->
         <div class="mt-6">
-          <span class="font-bold text-amber-400">Description:</span>
+          <span class="font-bold text-neutral-800">Description:</span>
           <template v-if="!isEditing">
             <p class="mt-2">{{ beer.description }}</p>
             <button @click="startEditing" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
