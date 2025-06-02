@@ -6,22 +6,18 @@ import { useRouter } from 'vue-router';
 import { fetchBeerById } from "@/services/api";
 import type { Beer } from "@/types/Beer";
 import HeaderUbeer from "@/components/HeaderUbeer.vue";
+import { useCartCount } from "@/composables/useCartCount";
 
+const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
 const route = useRoute();
-const { isAuthenticated } = useAuth0();
-const beer = ref<Beer | null>(null);
-const loading = ref<boolean>(true);
-const error = ref<string | null>(null);
-const isEditing = ref(false);
-const editedDescription = ref('');
-const API_URL = import.meta.env.VITE_API_URL;
-const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
-
-
-const { getAccessTokenSilently, user } = useAuth0();
-const username = user.value?.name;
-const picture = user.value?.picture;
 const router = useRouter();
+const { updateCartCount } = useCartCount();
+
+const beer = ref<Beer | null>(null);
+const loading = ref(true);
+const error = ref<string | null>(null);
+const showModal = ref(false);
+const API_URL = import.meta.env.VITE_API_URL;
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
@@ -31,8 +27,11 @@ onMounted(async () => {
   }
 
   try {
-    const id = Number(route.params.id);
-    beer.value = await fetchBeerById(id);
+    const beerId = Number(route.params.id);
+    if (isNaN(beerId)) {
+      throw new Error("ID de bière invalide");
+    }
+    beer.value = await fetchBeerById(beerId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       error.value = err.message;
@@ -44,120 +43,128 @@ onMounted(async () => {
   }
 });
 
-// supprimer une bière
+const addToCart = () => {
+  if (!beer.value) return;
+
+  const cart = JSON.parse(localStorage.getItem("ubeers_cart") || "[]");
+  const existingItem = cart.find((item: any) => item.beer.id === beer.value!.id);
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({ beer: beer.value, quantity: 1 });
+  }
+
+  localStorage.setItem("ubeers_cart", JSON.stringify(cart));
+  updateCartCount();
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const goToCart = () => {
+  router.push('/panier');
+};
+
 const deleteBeer = async () => {
-  if (!beer.value?.id) return;
+  if (!beer.value || !confirm("Êtes-vous sûr de vouloir supprimer cette bière ?")) return;
 
   try {
     const token = await getAccessTokenSilently();
 
-    const response = await fetch(`${API_URL}${API_ENDPOINT}/${beer.value.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
 
-    if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+    if (user.value?.name) {
+      headers['username'] = user.value.name;
     }
-    await router.push('/catalogue');
-  } catch (err) {
-    console.error('Erreur lors de la suppression:', err);
-    error.value = "Erreur lors de la suppression de la bière";
-  }
-};
+    if (user.value?.picture) {
+      headers['picture'] = user.value.picture;
+    }
 
-const startEditing = () => {
-  if (beer.value) {
-    editedDescription.value = beer.value.description;
-    isEditing.value = true;
-  }
-};
-
-const saveDescription = async () => {
-  if (!beer.value?.id) return;
-
-  try {
-    const response = await fetch(`${API_URL}${API_ENDPOINT}/${beer.value.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await getAccessTokenSilently()}`,
-        "username": username,
-        "picture": picture
-      },
-      body: JSON.stringify({
-        ...beer.value,
-        description: editedDescription.value
-      })
+    const response = await fetch(`${API_URL}/api/beers/${beer.value.id}`, {
+      method: 'DELETE',
+      headers
     });
 
     if (response.ok) {
-      beer.value.description = editedDescription.value;
-      isEditing.value = false;
-      location.reload()
+      router.push('/catalogue');
+    } else {
+      throw new Error('Erreur lors de la suppression');
     }
   } catch (err) {
-    console.error('Erreur lors de la modification:', err);
+    console.error('Erreur:', err);
+    error.value = "Erreur lors de la suppression de la bière";
   }
 };
 </script>
+
 <template>
   <HeaderUbeer />
-  <div class="bg-[#5B3A29] bg-opacity-70 backdrop-blur-md min-h-screen text-amber-300">
+  <div class="bg-white min-h-screen">
     <div class="container mx-auto py-10 pt-24 flex flex-col items-center">
-      <div v-if="loading" class="text-lg text-center">Chargement des détails...</div>
-      <div v-if="error" class="text-center text-red-500 font-semibold">{{ error }}</div>
+      <div v-if="loading" class="text-gray-600">Chargement...</div>
+      <div v-else-if="error" class="text-red-500 font-semibold">{{ error }}</div>
+      <div v-else-if="beer" class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 max-w-2xl w-full">
+        <div class="flex flex-col md:flex-row gap-8">
+          <img
+            :src="`${API_URL}${beer.imageUrl}`"
+            :alt="beer.label"
+            class="w-full md:w-64 h-64 object-cover rounded-lg"
+          />
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ beer.label }}</h1>
+            <div class="space-y-3 text-gray-600 mb-6">
+              <p><span class="font-semibold">Brasserie:</span> {{ beer.brewery }}</p>
+              <p><span class="font-semibold">Type:</span> {{ beer.type }}</p>
+              <p><span class="font-semibold">Taux d'alcool:</span> {{ beer.alcoholPercent }}%</p>
+              <p><span class="font-semibold">Prix:</span> {{ beer.price }} €</p>
+              <p><span class="font-semibold">Stock:</span> {{ beer.stockQuantity }}</p>
+              <p><span class="font-semibold">Description:</span> {{ beer.description }}</p>
+            </div>
 
-      <div v-else-if="beer" class="bg-[#6D4C41] rounded-xl shadow-lg p-6 w-full max-w-3xl">
-        <div class="flex flex-col items-center">
-          <img :src="`${API_URL}${beer.imageUrl}`" :alt="beer.label" class="w-48 h-48 object-cover rounded-lg shadow-md mb-4"/>
-          <h1 class="text-3xl font-bold text-white mb-4">{{ beer.label }}</h1>
-        </div>
-
-        <div class="text-lg space-y-3">
-          <p><span class="font-bold text-amber-400">Brasserie:</span> {{ beer.brewery }}</p>
-          <p><span class="font-bold text-amber-400">Type:</span> {{ beer.type }}</p>
-          <p><span class="font-bold text-amber-400">Alcool:</span> {{ beer.alcoholPercent }}%</p>
-          <p class="text-xl font-bold text-amber-500">{{ beer.price }}€</p>
-          <p><span class="font-bold text-amber-400">Stock disponible:</span> {{ beer.stockQuantity }}</p>
-        </div>
-
-        <!-- Section Description avec édition -->
-        <div class="mt-6">
-          <span class="font-bold text-amber-400">Description:</span>
-          <template v-if="!isEditing">
-            <p class="mt-2">{{ beer.description }}</p>
-            <button @click="startEditing" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-              Modifier la description
-            </button>
-            <div v-if="beer.lastUpdate" >Dernière modification: {{ beer.lastUpdate.data.user || "inconnu" }}</div>
-          </template>
-
-          <template v-else>
-            <textarea v-model="editedDescription" class="w-full h-24 p-2 mt-2 text-black rounded-lg"></textarea>
-            <div class="mt-3 flex justify-between">
-              <button @click="saveDescription" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
-                Sauvegarder
+            <div class="flex gap-4">
+              <button
+                @click="addToCart"
+                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Ajouter au panier
               </button>
-              <button @click="isEditing = false" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                Annuler
+              <button
+                @click="deleteBeer"
+                class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                Supprimer
               </button>
             </div>
-          </template>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Actions -->
-        <div class="mt-6 flex justify-between">
-          <router-link to="/catalogue" class="bg-amber-600 text-white py-2 px-4 rounded-lg hover:bg-amber-700 transition">
-            Retour au catalogue
-          </router-link>
-          <button @click="deleteBeer" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition">
-            Supprimer la bière
-          </button>
-        </div>
+  <!-- Modal -->
+  <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Produit ajouté au panier !</h3>
+      <p class="text-gray-600 mb-6">{{ beer?.label }} a été ajouté à votre panier.</p>
+      <div class="flex gap-3">
+        <button
+          @click="closeModal"
+          class="flex-1 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+        >
+          Continuer
+        </button>
+        <button
+          @click="goToCart"
+          class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+        >
+          Voir le panier
+        </button>
       </div>
     </div>
   </div>
