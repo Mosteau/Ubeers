@@ -9,8 +9,8 @@ lerna-debug.log*
 
 node_modules
 .DS_Store
-dist
 dist-ssr
+dist
 coverage
 *.local
 
@@ -28,3 +28,5 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+.history/

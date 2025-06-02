@@ -9,7 +9,7 @@ const router = express.Router();
 // Import itemControllers module for handling item-related operations
 const beersControllers = require("./controllers/beersControllers");
 const userControllers = require("./controllers/userControllers");
-const paymentController = require('./controllers/paymentControllers');
+const paymentController = require("./controllers/paymentControllers");
 
 // route for beers
 router.get("/beers", beersControllers.browse); // test OK
@@ -32,5 +32,8 @@ router.get("/beers-logs", beersControllers.getAllLogs);
 
 
 // Route pour le système de paiement stripe
-router.post('/payment/create-checkout-session', paymentController.createSession);
+router.post(
+  "/payment/create-checkout-session",
+  paymentController.createSession
+);
 module.exports = router;
