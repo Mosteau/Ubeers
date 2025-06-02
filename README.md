@@ -6,7 +6,7 @@ Projet réalisé dans le cadre d'un cours archi N TIERS et Services web B3 DEV I
 - Emilia BEGUIN
 - Romain MERCERON
 
-Ubeers est une application web pour la gestion de bières. Elle utilise Node.js avec Express pour le backend, PostgreSQL pour la base de données, et Vue.js pour le frontend.
+Ubeers est une application web pour la gestion et la vente de bières. Elle utilise Node.js avec Express pour le backend, PostgreSQL pour la base de données, et Vue.js pour le frontend.
 
 Pour le module atelier Services web, ont été ajoutés :
 
@@ -14,6 +14,7 @@ Pour le module atelier Services web, ont été ajoutés :
 | ---- | ---- |
 | Stripe | Formulaire de paiement en ligne |
 | Redis | Log des ajouts/modifications/suppressions de bières |
+| Redis | Log des utilisateurs connectés qui agissent sur les bières |
 
 adresse du projet en ligne : https://ubeers.vercel.app/
 
