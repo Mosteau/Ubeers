@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { fetchBeers } from '@/services/api';
 import { useRouter } from 'vue-router';
@@ -7,7 +7,6 @@ import type { Beer } from '@/types/Beer';
 import HeaderUbeer from '@/components/HeaderUbeer.vue';
 import ModalAddPanier from '@/components/ModalAddPanier.vue';
 import { useCartCount } from '@/composables/useCartCount';
-
 
 const { isAuthenticated } = useAuth0();
 const beers = ref<Beer[]>([]);
@@ -20,10 +19,6 @@ const router = useRouter();
 const { updateCartCount } = useCartCount();
 
 onMounted(async () => {
-  await nextTick();
-
-  await new Promise(resolve => setTimeout(resolve, 100));
-
   if (!isAuthenticated.value) {
     error.value = "Veuillez vous connecter pour voir le catalogue";
     loading.value = false;
@@ -32,11 +27,8 @@ onMounted(async () => {
 
   try {
     loading.value = true;
-    console.log('Chargement des bières...');
     beers.value = await fetchBeers();
-    console.log('Bières chargées:', beers.value.length);
   } catch (err: unknown) {
-    console.error('Erreur lors du chargement:', err);
     if (err instanceof Error) {
       error.value = err.message;
     } else {
@@ -46,7 +38,6 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-
 
 const addToCart = (beer: Beer) => {
   const cart = JSON.parse(localStorage.getItem("ubeers_cart") || "[]");
@@ -81,11 +72,11 @@ const viewDetails = (beerId: number) => {
 };
 
 // Gestion des erreurs d'image
-const handleImageError = (event: Event) => {
-  if (event.target && 'src' in event.target) {
-    (event.target as HTMLImageElement).src = '/fallback-beer.png';
-  }
-};
+// const handleImageError = (event: Event) => {
+//   if (event.target && 'src' in event.target) {
+//     (event.target as HTMLImageElement).src = '/fallback-beer.png';
+//   }
+// };
 </script>
 
 <template>
