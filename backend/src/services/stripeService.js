@@ -1,21 +1,28 @@
-const Stripe = require('stripe');
+const Stripe = require("stripe");
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 async function createCheckoutSession(items) {
-    return await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: items.map(item => ({
-            price_data: {
-                currency: 'eur',
-                product_data: { name: item.name },
-                unit_amount: item.price * 100, // en centimes
-            },
-            quantity: item.quantity,
-        })),
-        mode: 'payment',
-        success_url: process.env.STRIPE_SUCCESS_URL,
-        cancel_url: process.env.STRIPE_CANCEL_URL,
-    });
+  console.info("🛒 Création de session Stripe pour items:", items);
+
+  return await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items: items.map((item) => ({
+      price_data: {
+        currency: "eur",
+        product_data: { name: item.name },
+        unit_amount: Math.round(item.price * 100),
+      },
+      quantity: item.quantity,
+    })),
+    mode: "payment",
+    success_url: `${
+      process.env.FRONTEND_URL || "http://localhost:5173"
+    }/payment/success`,
+    cancel_url: `${
+      process.env.FRONTEND_URL || "http://localhost:5173"
+    }/payment/cancel`,
+  });
 }
 
 module.exports = { createCheckoutSession };

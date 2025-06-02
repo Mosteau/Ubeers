@@ -18,7 +18,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 
 
-const { getAccessTokenSilently } = useAuth0();
+const { getAccessTokenSilently, user } = useAuth0();
+const username = user.value?.name;
+const picture = user.value?.picture;
 const router = useRouter();
 
 onMounted(async () => {
@@ -82,7 +84,9 @@ const saveDescription = async () => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${await getAccessTokenSilently()}`
+        'Authorization': `Bearer ${await getAccessTokenSilently()}`,
+        "username": username,
+        "picture": picture
       },
       body: JSON.stringify({
         ...beer.value,
@@ -93,6 +97,7 @@ const saveDescription = async () => {
     if (response.ok) {
       beer.value.description = editedDescription.value;
       isEditing.value = false;
+      location.reload()
     }
   } catch (err) {
     console.error('Erreur lors de la modification:', err);
@@ -128,6 +133,7 @@ const saveDescription = async () => {
             <button @click="startEditing" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
               Modifier la description
             </button>
+            <div v-if="beer.lastUpdate" >Dernière modification: {{ beer.lastUpdate.data.user || "inconnu" }}</div>
           </template>
 
           <template v-else>

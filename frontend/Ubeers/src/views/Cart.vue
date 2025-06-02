@@ -3,10 +3,11 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth0 } from "@auth0/auth0-vue";
 import HeaderUbeer from "@/components/HeaderUbeer.vue";
-import type { Beer } from "@/types/Beer";
+import { checkout } from "@/services/stripe";
 import { useCartCount } from "@/composables/useCartCount";
+import type { Beer } from "@/types/Beer";
 
-const { isAuthenticated } = useAuth0();
+const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 const router = useRouter();
 const API_URL = import.meta.env.VITE_API_URL;
 const { updateCartCount } = useCartCount();
@@ -14,6 +15,7 @@ const { updateCartCount } = useCartCount();
 // Panier stocké dans le localStorage
 const cart = ref<{ beer: Beer; quantity: number }[]>([]);
 const error = ref<string | null>(null);
+const isProcessingPayment = ref(false);
 
 const loadCart = () => {
   const stored = localStorage.getItem("ubeers_cart");
@@ -45,6 +47,44 @@ const total = computed(() =>
 
 const goToCatalogue = () => {
   router.push("/catalogue");
+};
+
+const handleCheckout = async () => {
+  if (cart.value.length === 0) {
+    error.value = "Votre panier est vide.";
+    return;
+  }
+
+  try {
+    isProcessingPayment.value = true;
+    error.value = null;
+
+    console.log('🛒 Début du processus de paiement...');
+    console.log('🔐 Récupération du token Auth0...');
+
+    // Obtenir le token d'accès Auth0
+    const accessToken = await getAccessTokenSilently();
+    console.log('✅ Token récupéré');
+
+    // Préparer les items pour Stripe
+    const items = cart.value.map(item => ({
+      name: item.beer.label,
+      price: item.beer.price,
+      quantity: item.quantity
+    }));
+
+    console.log('📦 Items à envoyer:', items);
+
+    // Rediriger vers Stripe Checkout
+    await checkout(items, accessToken);
+
+  } catch (err: unknown) {
+    console.error('💥 Erreur lors du checkout:', err);
+    const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue lors du paiement.";
+    error.value = errorMessage;
+  } finally {
+    isProcessingPayment.value = false;
+  }
 };
 
 onMounted(() => {
@@ -112,8 +152,16 @@ onMounted(() => {
             <span class="text-2xl font-bold text-neutral-800">{{ total.toFixed(2) }} €</span>
           </div>
           <div class="mt-6 flex justify-end">
-            <button class="bg-[#f3e9dc] text-neutral-800 px-6 py-2 rounded-lg shadow-md hover:bg-[#c69c74] transition" disabled>
-              Commander (bientôt)
+            <button
+              @click="handleCheckout"
+              :disabled="isProcessingPayment || cart.length === 0"
+              class="bg-[#f3e9dc] text-neutral-800 px-6 py-2 rounded-lg hover:bg-green-700 shadow-md hover:bg-[#c69c74] transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center space-x-2"
+            >
+              <span v-if="isProcessingPayment">Traitement en cours...</span>
+              <span v-else>Procéder au paiement</span>
+              <svg v-if="!isProcessingPayment" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
             </button>
           </div>
         </div>
