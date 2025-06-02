@@ -29,10 +29,11 @@ const read = async (req, res, next) => {
     if (beer == null) {
       res.sendStatus(404);
     } else {
-      // Log de la consultation d'une bière spécifique (optionnel)
-      // await logService.logBeerAction('read', beerId, {
-      //   userId: req.auth?.sub || 'anonymous'
-      // });
+      let beerLogs = await logService.getBeerLogs(beerId);
+      const updateLog = beerLogs.find(log => log.action === 'update');
+      if (updateLog) {
+        beer.lastUpdate = updateLog;
+      }
 
       res.json(beer);
     }
@@ -112,7 +113,8 @@ const edit = async (req, res, next) => {
     } else {
       // Log de la modification
       await logService.logBeerAction("update", beerId, {
-        userId: req.auth?.sub || "anonymous",
+        user: req.headers.username || "no username",
+        profile: req.headers.picture || "no profile picture",
         oldBeerData: oldBeer, // Données avant modification
         newBeerData: req.body, // Nouvelles données
       });
