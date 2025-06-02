@@ -69,10 +69,11 @@ const viewDetails = (beerId: number) => {
   router.push(`/beer/${beerId}`);
 };
 
+// Correction finale de la fonction handleImageError
 const handleImageError = (event: Event) => {
-  const target = event.target;
-  if (target && 'src' in target) {
-    (target as HTMLImageElement).src = '/placeholder-beer.jpg';
+  const target = event.target as HTMLImageElement | null;
+  if (target) {
+    target.src = '/placeholder-beer.jpg';
   }
 };
 </script>
