@@ -71,12 +71,6 @@ const viewDetails = (beerId: number) => {
   router.push(`/beer/${beerId}`);
 };
 
-// Gestion des erreurs d'image
-// const handleImageError = (event: Event) => {
-//   if (event.target && 'src' in event.target) {
-//     (event.target as HTMLImageElement).src = '/fallback-beer.png';
-//   }
-// };
 </script>
 
 <template>
@@ -107,7 +101,6 @@ const viewDetails = (beerId: number) => {
           <img
             :src="`${API_URL}${beer.imageUrl}`"
             :alt="beer.label"
-            @error="handleImageError"
             @click="viewDetails(beer.id)"
             class="w-36 h-36 object-cover mb-4 rounded-md cursor-pointer hover:opacity-90 transition"
           />
